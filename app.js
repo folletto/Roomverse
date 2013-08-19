@@ -12,14 +12,16 @@ server.listen(3000);
 
 app.use(express.static(__dirname + "/public"));
 
-app.get('/', function (req, res) {
+app.get('/ver', function (req, res) {
   //res.sendfile(__dirname + '/x.html');
-  res.send("Go.")
+  res.send("Realtime Haikus.")
 });
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
+
+  socket.emit("bridge", { message: "Welcome to our humble server." });
+
+  socket.on('bridge', function (data) {
     console.log(data);
   });
 });
