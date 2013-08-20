@@ -44,6 +44,8 @@ var wb = {
   },
 
   bridgeReceive: function(data) {
+    console.log(data);
+    console.log(data.message);
     wb.receive(data.message);
   },
 
