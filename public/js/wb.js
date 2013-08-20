@@ -1,3 +1,5 @@
+$(document).ready(function() { wb.init(); });
+
 var wb = {
 
   socket: null,
@@ -5,28 +7,26 @@ var wb = {
   dom: {},
 
   /**************************************************************************************************** Init */
-  init: function() {
-    var self = this;
+  init: function() {    
+    this.socket = io.connect('http://localhost');;
 
-    $(document).ready(function() {
-      self.socket = io.connect('http://localhost');;
-
-      if (self.socket) {
-        // If the backend wrapper class is there, initialize
-        self.bindDOM();
-        self.bindSocket();
-      }
-    })
+    if (this.socket) {
+      // If the backend wrapper class is there, initialize
+      this.bindDOM();
+      this.bindSocket();
+    }
   },
 
-  bindDOM: function(messageBoxId, buttonSendId, chatId, channelId) {
+  bindDOM: function(messageBoxId, chatId, channelsId, widgetsId) {
     var self = this;
     messageBoxId = messageBoxId || "wb-messagebox";
     chatId = chatId || "wb-chat";
-    channelId = channelId || "wb-channel";
+    channelsId = channelsId || "wb-channels";
+    widgetsId = widgetsId || "wb-widgets";
     
     this.dom = {
-      messagebox: $("#" + messageBoxId)
+      messagebox: $("#" + messageBoxId),
+      chat: $("#" + chatId)
     }
     console.log(messageBoxId);
 
@@ -36,6 +36,8 @@ var wb = {
             self.dom.messagebox.val("");
         }
     });
+
+
 
   },
 
@@ -61,5 +63,6 @@ var wb = {
 
   receive: function(message) {
     console.log("-> " + message);
+    this.dom.chat.append("<li>" + message + "</li>");
   }
 };
