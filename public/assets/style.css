@@ -43,19 +43,19 @@ body {
 }
 
 .col1 {
-  background: rgba(255, 150, 150, 0.5); /**/
+  /*background: rgba(255, 150, 150, 0.5); /**/
   width: 200px;
   right: auto;
 }
 
 .col2 {
-  background: rgba(150, 255, 150, 0.5); /**/
+  /*background: rgba(150, 255, 150, 0.5); /**/
   left: 200px;
   right: 450px;
 }
 
 .col3 {
-  background: rgba(150, 150, 255, 0.5); /**/
+  /*background: rgba(150, 150, 255, 0.5); /**/
   left: auto;
   width: 450px;
 }

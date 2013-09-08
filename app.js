@@ -35,12 +35,12 @@ r.onReady = function() {
 io.sockets.on('connection', function (socket) {
 
   r.onReceive = function(channel, nick, text, data) {
-    socket.emit("bridge", { from: nick, to: channel, message: text});
+    socket.emit("bridge", { channel: channel, nick: nick, text: text });
   }
 
   socket.on('bridge', function (data) {
     console.log(data);
-    r.say("wbtestchannel", data.message);
+    r.say("wbtestchannel", data.text);
   });
 
 });

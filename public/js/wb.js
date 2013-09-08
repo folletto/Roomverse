@@ -46,13 +46,11 @@ var wb = {
   },
 
   bridgeReceive: function(data) {
-    console.log(data);
-    console.log(data.message);
-    wb.receive(data.message);
+    wb.receive(data.channel, data.nick, data.text, data);
   },
 
-  bridgeSend: function(message) {
-    wb.socket.emit("bridge", { message: message });
+  bridgeSend: function(text) {
+    wb.socket.emit("bridge", { channel: "", nick: "", text: text });
   },
 
 
@@ -65,9 +63,9 @@ var wb = {
     }
   },
 
-  receive: function(text) {
+  receive: function(channel, nick, text, data) {
     console.log("-> " + text);
-    this.channelWriter("", "someone", text);
+    this.channelWriter(channel, nick, text);
   },
 
 
