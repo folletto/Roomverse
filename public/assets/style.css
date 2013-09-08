@@ -43,19 +43,19 @@ body {
 }
 
 .col1 {
-  /*background: rgba(255, 150, 150, 0.5); /**/
+  background: rgba(255, 150, 150, 0.5); /**/
   width: 200px;
   right: auto;
 }
 
 .col2 {
-  /*background: rgba(150, 255, 150, 0.5); /**/
+  background: rgba(150, 255, 150, 0.5); /**/
   left: 200px;
   right: 450px;
 }
 
 .col3 {
-  /*background: rgba(150, 150, 255, 0.5); /**/
+  background: rgba(150, 150, 255, 0.5); /**/
   left: auto;
   width: 450px;
 }
@@ -77,13 +77,15 @@ body {
 #wb-chat {
   position: absolute;
   top: 0;
-  bottom: 28px;
+  bottom: 40px;
   right: 0;
+  left: 0;
   margin: 0;
   
   list-style: square;
   
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #wb-chat li {
