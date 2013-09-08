@@ -9,6 +9,8 @@ body {
   
   padding: 0;
   margin: 0;
+  
+  overflow: hidden;
 }
 
 /**************************************************************************************************** Master Bar */
@@ -36,25 +38,28 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
+  
+  overflow: hidden;
 }
 
 .col1 {
-  /* background: rgba(255, 150, 150, 0.5); /**/
+  /*background: rgba(255, 150, 150, 0.5); /**/
   width: 200px;
   right: auto;
 }
 
 .col2 {
-  /* background: rgba(150, 255, 150, 0.5); /**/
+  /*background: rgba(150, 255, 150, 0.5); /**/
   left: 200px;
   right: 450px;
 }
 
 .col3 {
-  /* background: rgba(150, 150, 255, 0.5); /**/
+  /*background: rgba(150, 150, 255, 0.5); /**/
   left: auto;
   width: 450px;
 }
+
 
 /**************************************************************************************************** General */
 .btn, button {
@@ -70,10 +75,29 @@ body {
 
 /**************************************************************************************************** Chat */
 #wb-chat {
+  position: absolute;
+  top: 0;
+  bottom: 28px;
+  right: 0;
+  margin: 0;
+  
   list-style: square;
+  
+  overflow: scroll;
 }
 
 #wb-chat li {
+  line-height: 1.4em;
+  padding: 5px 0;
+}
+
+#wb-chat .wb-message-nick {
+  font-weight: bold;
+  color: #666666;
+  display: block;
+}
+
+#wb-chat .wb-message-text {
   
 }
 
@@ -84,11 +108,11 @@ body {
   bottom: 0;
   width: 100%;
   padding: 8px 10px;
+  margin: 0;
   background: #f0f0f0;
-  
-  border-right: 3px #ff0000;
 }
 
 .chat-messagebox #wb-messagebox {
-  width: 100%;
+  width: 96%;
 }
+

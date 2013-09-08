@@ -46,7 +46,7 @@ River.prototype = {
   /**************************************************************************************************** API */
   joinChannel: function(channel) {
     console.log("~~~river~~~ joining #" + channel);
-    this.ircc.join('#' + channel, this.listendChannelJoin.bind(this));
+    this.ircc.join('#' + channel, this._listenChannelJoin.bind(this));
   },
 
   leaveChannel: function(channel) {

@@ -57,20 +57,29 @@ var wb = {
 
 
   /**************************************************************************************************** Actions */
-  send: function(message) {
-    console.log("<- " + message);
-    this.bridgeSend(message);
-    this.channelWriter("", "you", message);
+  send: function(text) {
+    if (text) {
+      console.log("<- " + text);
+      this.bridgeSend(text);
+      this.channelWriter("", "you", text);
+    }
   },
 
-  receive: function(message) {
-    console.log("-> " + message);
-    this.channelWriter("", "someone", message);
+  receive: function(text) {
+    console.log("-> " + text);
+    this.channelWriter("", "someone", text);
   },
 
 
   /**************************************************************************************************** DOM */
   channelWriter: function(channel, nick, message) {
-    this.dom.chat.append('<li><span class="nick">' + nick + '</span> <span class="message">' + message + '</message></li>');
+    var wasScrolled = ((this.dom.chat.scrollTop() + this.dom.chat.height()) >= this.dom.chat.prop('scrollHeight'));
+    
+    this.dom.chat.append('<li><span class="wb-message-nick">' + nick + '</span> <span class="wb-message-text">' + message + '</message></li>');
+    
+    // ****** Scroll to bottom if the chat wasn't scrolled up manually
+    if (wasScrolled) {
+      this.dom.chat.scrollTop(this.dom.chat.prop('scrollHeight'));
+    }
   }
 };
