@@ -1,0 +1,94 @@
+
+
+
+
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  
+  padding: 0;
+  margin: 0;
+}
+
+/**************************************************************************************************** Master Bar */
+#masterbar {
+  background: #000000;
+  color: #ffffff;
+  height: 50px;
+  margin: 0;
+  padding: 0;
+}
+
+#masterbar h1 {
+  font-family: Georgia;
+  font-weight: normal;
+  font-size: 20px;
+  
+  margin: 0;
+  padding: 14px 20px;
+}
+
+/**************************************************************************************************** Columns */
+.col1, .col2, .col3 {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.col1 {
+  /* background: rgba(255, 150, 150, 0.5); /**/
+  width: 200px;
+  right: auto;
+}
+
+.col2 {
+  /* background: rgba(150, 255, 150, 0.5); /**/
+  left: 200px;
+  right: 450px;
+}
+
+.col3 {
+  /* background: rgba(150, 150, 255, 0.5); /**/
+  left: auto;
+  width: 450px;
+}
+
+/**************************************************************************************************** General */
+.btn, button {
+  
+}
+
+.box, input {
+  border: 1px solid #e0e0e0;
+  
+  font-size: 16px;
+}
+
+
+/**************************************************************************************************** Chat */
+#wb-chat {
+  list-style: square;
+}
+
+#wb-chat li {
+  
+}
+
+
+/**************************************************************************************************** Message Input */
+.chat-messagebox {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 8px 10px;
+  background: #f0f0f0;
+  
+  border-right: 3px #ff0000;
+}
+
+.chat-messagebox #wb-messagebox {
+  width: 100%;
+}

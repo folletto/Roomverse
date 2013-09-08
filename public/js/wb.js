@@ -55,14 +55,22 @@ var wb = {
     wb.socket.emit("bridge", { message: message });
   },
 
+
   /**************************************************************************************************** Actions */
   send: function(message) {
     console.log("<- " + message);
     this.bridgeSend(message);
+    this.channelWriter("", "you", message);
   },
 
   receive: function(message) {
     console.log("-> " + message);
-    this.dom.chat.append("<li>" + message + "</li>");
+    this.channelWriter("", "someone", message);
+  },
+
+
+  /**************************************************************************************************** DOM */
+  channelWriter: function(channel, nick, message) {
+    this.dom.chat.append('<li><span class="nick">' + nick + '</span> <span class="message">' + message + '</message></li>');
   }
 };

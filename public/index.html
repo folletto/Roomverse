@@ -7,12 +7,27 @@
   <script src="/socket.io/socket.io.js"></script>
 
   <script src="/js/wb.js"></script>
+  <link rel="stylesheet" href="assets/style.css" media="all"/>
 </head>
 <body>
-  
-  <div id="wb-chat">
-    <!-- chat will be pushed here -->
+  <div id="masterbar">
+    <h1>WordBridge</h1>
   </div>
-  <input id="wb-messagebox" type="text">
+  
+  <!-- column 1 -->
+  <div class="col1" id="wb-channels"></div>
+  
+  <!-- column 2 -->
+  <div class="col2">
+    <ul id="wb-chat">
+      <!-- chat will be pushed here -->
+    </ul>
+    <div class="chat-messagebox">
+      <input id="wb-messagebox" type="text">
+    </div>
+  </div>
+
+  <!-- column 3 -->
+  <div class="col3" id="wb-widgets"></div>
 </body>
 </html>
