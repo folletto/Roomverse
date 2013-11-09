@@ -1,5 +1,5 @@
 /*
- * WordBridge
+ * WordBridge: River
  *
  * Communication class to whatever system is in place to handle the channels
  * Right now... let's say IRC.

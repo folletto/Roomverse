@@ -1,0 +1,17 @@
+doctype 5
+html(lang="en")
+  head
+    title WordBridge
+  body
+    h1 Login
+    form(action='/c', method='post')
+      label(for='nickname') Nickname
+      input(id='nickname', name='nickname', value='pawnpawnpawn')
+      
+      label(for='password') Password (if any)
+      input(id='password', name='password', type="password")
+      
+      label(for='channel') Channel
+      input(id='channel', name='channel', value='wbtestchannel')
+      
+      input(type='submit', value="Login")

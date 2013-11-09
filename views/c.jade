@@ -1,0 +1,25 @@
+doctype 5
+html(lang='en')
+  head
+    title WordBridge
+    script(src='/js/lib/underscore-min.js')
+    script(src='/js/lib/backbone-min.js')
+    script(src='/js/lib/jquery-2.0.3.min.js')
+    script(src='/js/lib/underscore-min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/js/wb.js')
+    link(rel='stylesheet', href='/assets/style.css')
+  body
+    #masterbar
+      h1 WordBridge
+        span(style="color: #d0d0d0") pre-alpha
+        span= '' + nickname + '#' + channel
+    
+    #wb-channels.col1
+     
+    .col2
+      #wb-chat
+      .chat-messagebox
+        input#wb-messagebox(type='text')
+    
+    #wb-widgets.col3
