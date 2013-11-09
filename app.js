@@ -76,7 +76,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('disconnect', function(data) {
     // TODO: make a softer disconnect with a timeout for reconnection
     clients[pawnIndex].destroy();
-    clients.splice(pawnIndex, 1);
+    delete clients.splice(pawnIndex, 1);
   });
   
 });
