@@ -8,7 +8,8 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var irc = require('irc');
-var river = require('./classes/river');
+var pawn = require('./classes/pawn');
+
 
 
 io.set('log level', 1);
@@ -37,38 +38,47 @@ app.use(express.static(__dirname + "/public"));
 
 // ****** Routing
 app.get('/', function(req, res) {
-  res.render('index');
+  res.render('index', {
+    nickname: req.session.nickname || 'pawnpawnpawn',
+    channels: req.session.channels || 'wbtestchannel'
+  });
 });
 
 app.all('/c', function(req, res) {
+  
+  // Session
+  req.session.nickname = req.body.nickname;
+  req.session.channels = req.body.channels;
+  
   res.render('c', {
     nickname: req.body.nickname,
-    channel: req.body.channel
+    channels: req.body.channels
   });
 });
 
 
 
-// ****** River
-// This connects to the channel subsystem
-var r = new river.River("^ThePawn");
-r.onReady = function() {
-  r.joinChannel("wbtestchannel");
-}
+var clients = [];
 
 
 // ****** Socket.io
 // This connects to the client
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function(socket) {
   
-
-  r.onReceive = function(channel, nick, text, data) {
-    socket.emit("bridge", { channel: channel, nick: nick, text: text });
-  }
-
-  socket.on('bridge', function (data) {
-    console.log(data);
-    r.say("wbtestchannel", data.text);
+  // Create the connected object.
+  // TODO: maybe a pawn manager class?
+  console.log("Clients: " + clients.length + " + 1");
+  var p = new pawn.Pawn(socket);
+  var pawnIndex = clients.length;
+  clients[pawnIndex] = p;
+  
+  
+  socket.on('disconnect', function(data) {
+    // TODO: make a softer disconnect with a timeout for reconnection
+    clients[pawnIndex].destroy();
+    clients.splice(pawnIndex, 1);
   });
-
+  
 });
+
+

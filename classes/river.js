@@ -41,6 +41,16 @@ River.prototype = {
     this.ircc.addListener('registered', this._listenRegistered.bind(this)); // triggered when connected
     this.ircc.addListener('message', this._listenMessage.bind(this)); // messages
   },
+  
+  destroy: function() {
+    //
+    // Closing? Close IRC.
+    //
+    var self = this;
+    this.ircc.disconnect(":)", function() {
+      delete self.ircc;
+    });
+  },
 
 
   /**************************************************************************************************** API */

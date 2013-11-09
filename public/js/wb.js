@@ -1,4 +1,15 @@
-$(document).ready(function() { wb.init(); });
+/*
+ * WordBridge Client
+ *
+ * This class manages the connection from the client.
+ * 
+ * Requires
+ *   Socket.io
+ *   jQuery
+ *
+ */
+ 
+ $(document).ready(function() { wb.init(); });
 
 var wb = {
 
@@ -8,7 +19,7 @@ var wb = {
 
   /**************************************************************************************************** Init */
   init: function() {    
-    this.socket = io.connect('http://localhost');;
+    this.socket = io.connect('http://localhost', { 'sync disconnect on unload': true });
 
     if (this.socket) {
       // If the backend wrapper class is there, initialize
