@@ -21,8 +21,9 @@ io.set('log level', 1);
 app.use(express.bodyParser());
 
 // Sessions
+var SESSION_SECRET = 'chumbawamba';
 app.use(express.cookieParser());
-app.use(express.session({secret: 'chumbawamba'}));
+app.use(express.session({secret: SESSION_SECRET}));
 
 // Jade
 app.engine('jade', require('jade').__express);
@@ -58,25 +59,18 @@ app.all('/c', function(req, res) {
 
 
 
-var clients = [];
-
-
 // ****** Socket.io
 // This connects to the client
 io.sockets.on('connection', function(socket) {
   
   // Create the connected object.
   // TODO: maybe a pawn manager class?
-  console.log("Clients: " + clients.length + " + 1");
   var p = new pawn.Pawn(socket);
-  var pawnIndex = clients.length;
-  clients[pawnIndex] = p;
-  
   
   socket.on('disconnect', function(data) {
     // TODO: make a softer disconnect with a timeout for reconnection
-    clients[pawnIndex].destroy();
-    delete clients.splice(pawnIndex, 1);
+    p.destroy();
+    delete p;
   });
   
 });

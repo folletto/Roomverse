@@ -25,11 +25,9 @@ Pawn.prototype = {
     //
     var self = this;
     
-    // this creates the IRC channel
-    console.log("Pawn UP!");
-    
     // Socket.io
     this.socket = socket;
+    
     
     // River
     this.r = new river.River("^ThePawn");
@@ -51,8 +49,6 @@ Pawn.prototype = {
     //
     // Called on disconnect. Let's clean up our channels.
     //
-    console.log("Pawn DOWN!");
-    
     this.r.destroy();
     delete r;
   }
