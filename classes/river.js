@@ -9,6 +9,7 @@
 var irc = require('irc');
 
 var IRC_SERVER = "chat.freenode.net";
+var IRC_PORT = 6667;
 
 var River = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 River.prototype = {
@@ -32,8 +33,12 @@ River.prototype = {
     this.ircc = new irc.Client(IRC_SERVER, this.nick, {
       userName: this.nick,
       realname: "WB Test Client",
-      port: 6667,
+      port: IRC_PORT,
       channels: [],
+      
+      /*secure: true,
+      sasl: true,
+      password: 'username:password',*/
     });
 
     // ****** Binding season
