@@ -8,7 +8,7 @@
 
 var irc = require('irc');
 
-var River = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+var River = module.exports.River = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 River.prototype = {
 
   ircc: null,
@@ -101,5 +101,3 @@ River.prototype = {
     console.log("~~~river~~~ Joined.");
   }
 }
-
-module.exports.River = River;

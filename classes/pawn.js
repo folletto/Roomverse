@@ -13,7 +13,7 @@ var river = require('./river');
 
  
  
-var Pawn = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+var Pawn = module.exports.Pawn = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 Pawn.prototype = {
   
   socket: null,
@@ -53,5 +53,3 @@ Pawn.prototype = {
     delete r;
   }
 }
-
-module.exports.Pawn = Pawn;
