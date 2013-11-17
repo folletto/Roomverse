@@ -59,10 +59,16 @@ River.prototype = {
   
   /****** Calls */
   joinChannel: function(channels, fx) {
+    var self = this;
+    
     if (channels.length > 0) {
       for (var i in channels) {
         console.log("~~~river~~~ Joining #" + channels[i]);
-        this.ircc.join("#" + channels[i], fx || this._listenChannelJoin.bind(this));      
+        this.ircc.join("#" + channels[i], function(nick, message) { 
+          var channel = message.args[0].replace(/#/, "");
+          if (fx) fx(channel)
+          else self._listenChannelJoin(channel);
+        });
       }
     }
   },
@@ -102,7 +108,7 @@ River.prototype = {
     this.onReceive(to, nick, text, message);
   },
 
-  _listenChannelJoin: function(nick, message) {
-    console.log("~~~river~~~ Joined " + message.args[0]);
+  _listenChannelJoin: function(channel) {
+    console.log("~~~river~~~ Joined " + channel);
   }
 }
