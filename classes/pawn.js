@@ -32,7 +32,9 @@ Pawn.prototype = {
     // River
     this.r = new river.River(config, "^ThePawn");
     this.r.onReady = function() {
-      self.r.joinChannel("wbtestchannel");
+      self.r.joinChannel("wbtestchannel", function() {
+        self.socket.emit("bridge", { channel: "wbtestchannel", nick: "System", text: "Joined #wbtestchannel" });
+      });
     }
     
     this.r.onReceive = function(channel, nick, text, data) {

@@ -20,7 +20,7 @@ River.prototype = {
     //
     // Initialize the river class to manage the channels
     //
-    console.log("~~~river~~~ starting...");
+    console.log("~~~river~~~ Starting...");
 
     this.nick = nick || "^WB-Pawn";
     this.onReady = onReady || this.onReady;
@@ -56,14 +56,16 @@ River.prototype = {
 
 
   /**************************************************************************************************** API */
-  joinChannel: function(channel) {
-    console.log("~~~river~~~ joining #" + channel);
-    this.ircc.join('#' + channel, this._listenChannelJoin.bind(this));
+  
+  /****** Calls */
+  joinChannel: function(channel, fx) {
+    console.log("~~~river~~~ Joining #" + channel);
+    this.ircc.join('#' + channel, fx || this._listenChannelJoin.bind(this));
   },
 
-  leaveChannel: function(channel) {
-    console.log("~~~river~~~ leaving #" + channel);
-    this.ircc.part('#' + channel);
+  leaveChannel: function(channel, fx) {
+    console.log("~~~river~~~ Leaving #" + channel);
+    this.ircc.part('#' + channel, fx);
   },
 
   say: function(channel, text) {
@@ -71,8 +73,7 @@ River.prototype = {
   },
 
 
-  /**************************************************************************************************** Events */
-  // These events should be re-bound to external functions.
+  /****** Events */
   onReady: function() {
     console.log("~~~river~~~ Server ready. Nothing to do.");
   },
@@ -97,7 +98,7 @@ River.prototype = {
     this.onReceive(to, nick, text, message);
   },
 
-  _listenChannelJoin: function(nick, to, text, message) {
-    console.log("~~~river~~~ Joined.");
+  _listenChannelJoin: function(nick, message) {
+    console.log("~~~river~~~ Joined " + message.args[0]);
   }
 }
