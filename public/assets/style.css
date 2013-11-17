@@ -88,6 +88,10 @@ body {
   overflow-y: auto;
 }
 
+#wb-chat.wait {
+  background: #ffffff url(throbber.gif) no-repeat center center;
+}
+
 #wb-chat li {
   line-height: 1.4em;
   padding: 5px 0;

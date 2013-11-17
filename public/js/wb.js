@@ -84,6 +84,7 @@ var wb = {
   channelWriter: function(channel, nick, message) {
     var wasScrolled = ((this.dom.chat.scrollTop() + this.dom.chat.height()) >= this.dom.chat.prop('scrollHeight'));
     
+    this.dom.chat.removeClass("wait");
     this.dom.chat.append('<li><span class="wb-message-nick">' + nick + '</span> <span class="wb-message-text">' + message + '</message></li>');
     
     // ****** Scroll to bottom if the chat wasn't scrolled up manually
