@@ -19,6 +19,8 @@ Pawn.prototype = {
   socket: null,
   r: null,
   
+  nickname: "",
+  
   init: function(config, socket) {
     //
     // Initialize the server-side pawn to manage the channels
@@ -27,10 +29,11 @@ Pawn.prototype = {
     
     // Socket.io
     this.socket = socket;
+    this.nickname = config.pawn.nickname || "^ThePawn";
     
     
     // River
-    this.r = new river.River(config, "^ThePawn");
+    this.r = new river.River(config, this.nickname);
     this.r.onReady = function() {
       self.r.joinChannel("wbtestchannel", function() {
         self.socket.emit("bridge", { channel: "wbtestchannel", nick: "System", text: "Joined #wbtestchannel" });

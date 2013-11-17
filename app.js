@@ -119,6 +119,10 @@ io.sockets.on('connection', function wb_iosocket(socket) {
   
   // Create the connected object.
   // TODO: maybe a pawn manager class?
+  config.pawn = {
+    nickname: socket.handshake.session.nickname,
+    channels: socket.handshake.session.channels.split(" ")
+  };
   var p = new pawn.Pawn(config, socket);
   //console.info(socket.handshake.session);
   
