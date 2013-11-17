@@ -3,14 +3,15 @@
  *
  */
 
-var express = require('express')
+var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var irc = require('irc');
 var pawn = require('./classes/pawn');
+var config = require('./config.json');
 
-
+console.info(config);
 
 io.set('log level', 1);
 
@@ -120,7 +121,7 @@ io.sockets.on('connection', function wb_iosocket(socket) {
   
   // Create the connected object.
   // TODO: maybe a pawn manager class?
-  var p = new pawn.Pawn(socket);
+  var p = new pawn.Pawn(config, socket);
   console.info(socket.handshake.session);
   
   socket.on('disconnect', function(data) {

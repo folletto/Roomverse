@@ -8,9 +8,6 @@
 
 var irc = require('irc');
 
-var IRC_SERVER = "chat.freenode.net";
-var IRC_PORT = 6667;
-
 var River = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 River.prototype = {
 
@@ -19,7 +16,7 @@ River.prototype = {
 
   onReady: null,
 
-  init: function(nick, onReady, onReceive) {
+  init: function(config, nick, onReady, onReceive) {
     //
     // Initialize the river class to manage the channels
     //
@@ -30,15 +27,15 @@ River.prototype = {
     this.onReceive = onReceive || this.onReceive;
 
     // ****** Let's IRC
-    this.ircc = new irc.Client(IRC_SERVER, this.nick, {
+    this.ircc = new irc.Client(config.irc.server, this.nick, {
       userName: this.nick,
       realname: "WB Test Client",
-      port: IRC_PORT,
+      port: config.irc.port,
       channels: [],
       
-      /*secure: true,
-      sasl: true,
-      password: 'username:password',*/
+      secure: config.irc.secure,
+      sasl: config.irc.sasl,
+      //password: 'username:password',
     });
 
     // ****** Binding season

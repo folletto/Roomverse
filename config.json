@@ -1,0 +1,8 @@
+{
+  "irc": {
+    "server": "chat.freenode.net",
+    "port": "6667",
+    "secure": false,
+    "sasl": false
+  }
+}

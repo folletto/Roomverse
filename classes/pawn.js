@@ -19,7 +19,7 @@ Pawn.prototype = {
   socket: null,
   r: null,
   
-  init: function(socket) {
+  init: function(config, socket) {
     //
     // Initialize the server-side pawn to manage the channels
     //
@@ -30,7 +30,7 @@ Pawn.prototype = {
     
     
     // River
-    this.r = new river.River("^ThePawn");
+    this.r = new river.River(config, "^ThePawn");
     this.r.onReady = function() {
       self.r.joinChannel("wbtestchannel");
     }
