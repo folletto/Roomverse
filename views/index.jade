@@ -5,13 +5,13 @@ html(lang="en")
   body
     h1 Login
     form(action='/c', method='post')
-      label(for='nickname') Nickname
-      input(id='nickname', name='nickname', value=nickname)
+      label(for='userid') Nickname
+      input(id='userid', name='userid', value=userid)
       
       label(for='password') Password (if any)
       input(id='password', name='password', type="password")
       
-      label(for='channels') Channel
-      input(id='channels', name='channels', value=channels)
+      label(for='rooms') Channels
+      input(id='rooms', name='rooms', value=rooms)
       
       input(type='submit', value="Login")

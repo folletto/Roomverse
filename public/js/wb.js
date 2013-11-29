@@ -9,18 +9,22 @@
  *
  */
  
- $(document).ready(function() { wb.init(); });
+ $(document).ready(function() { wb.init(config); });
 
 var wb = {
 
   socket: null,
+  
+  userid: "You",
 
   dom: {},
 
   /**************************************************************************************************** Init */
-  init: function() {    
+  init: function(config) {    
     this.socket = io.connect('http://localhost', { 'sync disconnect on unload': true });
-
+    
+    this.userid = config.userid;
+    
     if (this.socket) {
       // If the backend wrapper class is there, initialize
       this.bindDOM();
@@ -28,11 +32,11 @@ var wb = {
     }
   },
 
-  bindDOM: function(messageBoxId, chatId, channelsId, widgetsId) {
+  bindDOM: function(messageBoxId, chatId, roomsId, widgetsId) {
     var self = this;
     messageBoxId = messageBoxId || "wb-messagebox";
     chatId = chatId || "wb-chat";
-    channelsId = channelsId || "wb-channels";
+    roomsId = roomsId || "wb-rooms";
     widgetsId = widgetsId || "wb-widgets";
     
     this.dom = {
@@ -43,7 +47,7 @@ var wb = {
 
     this.dom.messagebox.keyup(function(event) {
         if(event.keyCode == 13){
-            self.send(self.dom.messagebox.val());
+            self.send("wbtestchannel", self.dom.messagebox.val());
             self.dom.messagebox.val("");
         }
     });
@@ -53,39 +57,50 @@ var wb = {
   },
 
   bindSocket: function(socket) {
-    this.socket.on("bridge", this.bridgeReceive);
+    this.socket.on("bridge", this.bridgeReceive.bind(this));
+    this.socket.on("message", this.messageReceive.bind(this));
   },
-
-  bridgeReceive: function(data) {
-    wb.receive(data.channel, data.nick, data.text, data);
+  
+  /****** Bridge */
+  bridgeReceive: function(packet) {
+    console.log(packet);
   },
-
+  
   bridgeSend: function(text) {
-    wb.socket.emit("bridge", { channel: "", nick: "", text: text });
+    wb.socket.emit("bridge", { room: "", userid: "", text: text });
+  },
+  
+  /****** Message */
+  messageReceive: function(packet) {
+    wb.receive(packet.room, packet.userid, packet.text, packet);
+  },
+
+  messageSend: function(room, text) {
+    wb.socket.emit("message", { room: room, userid: this.userid, text: text });
   },
 
 
   /**************************************************************************************************** Actions */
-  send: function(text) {
+  send: function(room, text) {
     if (text) {
       console.log("<- " + text);
-      this.bridgeSend(text);
-      this.channelWriter("", "you", text);
+      this.messageSend(room, text);
+      this.roomEcho(room, "you", text);
     }
   },
 
-  receive: function(channel, nick, text, data) {
+  receive: function(room, userid, text, packet) {
     console.log("-> " + text);
-    this.channelWriter(channel, nick, text);
+    this.roomEcho(room, userid, text);
   },
 
 
   /**************************************************************************************************** DOM */
-  channelWriter: function(channel, nick, message) {
+  roomEcho: function(room, userid, text) {
     var wasScrolled = ((this.dom.chat.scrollTop() + this.dom.chat.height()) >= this.dom.chat.prop('scrollHeight'));
     
     this.dom.chat.removeClass("wait");
-    this.dom.chat.append('<li><span class="wb-message-nick">' + nick + '</span> <span class="wb-message-text">' + message + '</message></li>');
+    this.dom.chat.append('<li><span class="wb-message-nick">' + userid + '</span> <span class="wb-message-text">' + text + '</message></li>');
     
     // ****** Scroll to bottom if the chat wasn't scrolled up manually
     if (wasScrolled) {

@@ -53,20 +53,20 @@ app.use(express.static(__dirname + "/public"));
 // ****** Routing
 app.get('/', function(req, res) {
   res.render('index', {
-    nickname: req.session.nickname || 'pawnpawnpawn',
-    channels: req.session.channels || 'wbtestchannel'
+    userid: req.session.userid || 'pawnpawnpawn',
+    rooms: req.session.rooms || 'wbtestchannel'
   });
 });
 
 app.all('/c', function(req, res) {
   
   // Session
-  req.session.nickname = req.body.nickname;
-  req.session.channels = req.body.channels;
+  req.session.userid = req.body.userid;
+  req.session.rooms = req.body.rooms;
   
   res.render('c', {
-    nickname: req.body.nickname,
-    channels: req.body.channels
+    userid: req.body.userid,
+    rooms: req.body.rooms
   });
 });
 
@@ -120,8 +120,8 @@ io.sockets.on('connection', function wb_iosocket(socket) {
   // Create the connected object.
   // TODO: maybe a pawn manager class?
   config.pawn = {
-    nickname: socket.handshake.session.nickname,
-    channels: socket.handshake.session.channels.split(" ")
+    userid: socket.handshake.session.userid,
+    rooms: socket.handshake.session.rooms && socket.handshake.session.rooms.split(" ")
   };
   var p = new pawn.Pawn(config, socket);
   //console.info(socket.handshake.session);

@@ -7,6 +7,8 @@ html(lang='en')
     script(src='/js/lib/jquery-2.0.3.min.js')
     script(src='/js/lib/underscore-min.js')
     script(src='/socket.io/socket.io.js')
+    script.
+      var config = { userid: "#{userid}", rooms: "#{rooms}" };
     script(src='/js/wb.js')
     link(rel='stylesheet', href='/assets/style.css')
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,700')
@@ -14,9 +16,9 @@ html(lang='en')
     #masterbar
       h1 WordBridge
         span(style="color: #d0d0d0") pre-alpha
-        span= '' + nickname + '#' + channels
+        span= '' + userid + '#' + rooms
     
-    #wb-channels.col1
+    #wb-rooms.col1
      
     .col2
       #wb-chat.wait

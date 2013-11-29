@@ -3,6 +3,9 @@
  *
  * This is the individual user connected to the socket. It handlers pretty much everything (oh dear).
  *
+ * Socket.io channels used:
+ *   bridge: system operations
+ *   message: all messages, marked with sender / channel
  */
 
 
@@ -19,40 +22,40 @@ Pawn.prototype = {
   socket: null,
   r: null,
   
-  nickname: "",
+  userid: "",
   
   init: function(config, socket) {
     //
-    // Initialize the server-side pawn to manage the channels
+    // Initialize the server-side pawn to manage the rooms
     //
     var self = this;
     
     // Socket.io
     this.socket = socket;
-    this.nickname = config.pawn.nickname || "^ThePawn";
+    this.userid = config.pawn.userid || "^ThePawn";
     
     
     // River
-    this.r = new river.River(config, this.nickname);
+    this.r = new river.River(config, this.userid);
     this.r.onReady = function() {
-      self.r.joinChannel(config.pawn.channels, function(channel) {
-        self.socket.emit("bridge", { channel: "wbtestchannel", nick: "System", text: "Joined #" + channel });
+      self.r.joinChannel(config.pawn.rooms, function(channel) {
+        self.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
       });
     }
     
     this.r.onReceive = function(channel, nick, text, data) {
-      self.socket.emit("bridge", { channel: channel, nick: nick, text: text });
+      self.socket.emit("message", { userid: nick, room: channel, text: text });
     }
     
-    this.socket.on('bridge', function(data) {
-      console.log(data);
-      self.r.say("wbtestchannel", data.text);
+    this.socket.on('message', function(packet) {
+      console.log(packet);
+      self.r.say(packet.room, packet.text);
     });
   },
   
   destroy: function() {
     //
-    // Called on disconnect. Let's clean up our channels.
+    // Called on disconnect. Let's clean up our rooms.
     //
     this.r.destroy();
     delete r;
