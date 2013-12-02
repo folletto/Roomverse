@@ -18,6 +18,9 @@ var wb = {
   userid: "You",
 
   dom: {},
+  
+  chats: {},
+  activeChat: null,
 
   /**************************************************************************************************** Init */
   init: function(config) {    
@@ -32,24 +35,25 @@ var wb = {
     }
   },
 
-  bindDOM: function(messageBoxId, chatId, roomsId, widgetsId) {
+  bindDOM: function(messageBoxId, chatsId, roomsId, widgetsId) {
     var self = this;
-    messageBoxId = messageBoxId || "wb-messagebox";
-    chatId = chatId || "wb-chat";
+    chatsId = chatsId || "wb-chats";
     roomsId = roomsId || "wb-rooms";
     widgetsId = widgetsId || "wb-widgets";
     
     this.dom = {
-      messagebox: $("#" + messageBoxId),
-      chat: $("#" + chatId)
+      chats: $("#" + chatsId)
     }
-    console.log(messageBoxId);
 
-    this.dom.messagebox.keyup(function(event) {
-        if(event.keyCode == 13){
-            self.send("wbtestchannel", self.dom.messagebox.val());
-            self.dom.messagebox.val("");
-        }
+    // ****** Bind send event to all future chat textfields
+    this.dom.chats.on('keyup', 'input.wb-messagebox', function keyupEventSend() {
+      if(event.keyCode == 13){
+        var box = $(this);
+        var room = box.data("room");
+        
+        self.send(room, box.val());
+        box.val("");
+      }
     });
 
 
@@ -97,14 +101,103 @@ var wb = {
 
   /**************************************************************************************************** DOM */
   roomEcho: function(room, userid, text) {
-    var wasScrolled = ((this.dom.chat.scrollTop() + this.dom.chat.height()) >= this.dom.chat.prop('scrollHeight'));
+    this.dom.chats.removeClass("wait");
     
-    this.dom.chat.removeClass("wait");
-    this.dom.chat.append('<li><span class="wb-message-nick">' + userid + '</span> <span class="wb-message-text">' + text + '</message></li>');
-    
-    // ****** Scroll to bottom if the chat wasn't scrolled up manually
-    if (wasScrolled) {
-      this.dom.chat.scrollTop(this.dom.chat.prop('scrollHeight'));
+    if (!this.chats[room]) {
+      this.chats[room] = new WBRoom(this.dom.chats, { room: room });
     }
+    
+    if (!this.activeChat) {
+      // ****** First chat, set active
+      this.chats[room].focus();
+      this.activeChat = room;
+    }
+    
+    this.chats[room].appendItem(userid, text);
   }
 };
+
+
+/**************************************************************************************************** UI: Chat */
+var WBRoom = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+WBRoom.prototype = {
+  
+  template: {
+    roomList: '<li class="<%= room %>"><%= room %></li>',
+    log: '<div class="wb-chat <%= room %>"> <h2><%= room %></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="wb-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
+    logItem: '<li><span class="wb-message-nick"><%= userid %></span> <span class="wb-message-text"><%= text %></message></li>'
+  },
+  
+  init: function(parent, data) {
+    //
+    // Create DOM elements.
+    //
+    
+    // ****** Create instance variables
+    this.dom = {
+      self: null,
+      parent: null,
+      listItem: null
+    };
+    
+    // ****** Initialize room list
+    var roomList = $("#wb-room-list");
+    roomList.append(_.template(this.template.roomList, data));
+    this.dom.listItem = roomList.children('li.' + data.room);
+    
+    console.log(this);
+    console.log(this.dom.listItem);
+    
+    this.dom.listItem.click(this.clickListItem.bind(this));
+    
+    // ****** Initialize chat log
+    this.dom.parent = _.isString(parent) ? $(parent) : parent; // let's get the jQuery object
+    this.dom.parent.append(_.template(this.template.log, data)); 
+    
+    this.dom.self = this.dom.parent.children('.wb-chat.' + data.room); // and again let's store the jQuery object
+  },
+  
+  
+  /**************************************************************************************************** DOM */
+  appendItem: function(userid, text) {
+    //
+    // Appends a new chat log item to the DOM element.
+    //
+    var data = {
+      'userid': userid,
+      'text': text
+    }
+    
+    // ****** Was this scrolled?
+    var boolWasScrolled = ((this.dom.self.children('.chat-log').scrollTop() + this.dom.self.children('.chat-log').height()) >= this.dom.self.children('.chat-log').prop('scrollHeight'));
+    
+    // ****** Append
+    this.dom.self.children('.chat-log').append(_.template(this.template.logItem, data));
+    
+    // ****** Scroll to bottom if the chat wasn't scrolled up manually
+    if (boolWasScrolled) {
+      this.dom.self.children('.chat-log').scrollTop(this.dom.self.children('.chat-log').prop('scrollHeight'));
+    }
+  },
+  
+  /**************************************************************************************************** Events */
+  clickListItem: function() {
+    
+    // Reset
+    this.dom.listItem.parent().children('li').removeClass('active');
+    this.dom.parent.children('.wb-chat').removeClass('active');
+    
+    // Activate
+    this.focus();
+    
+  },
+  
+  /**************************************************************************************************** Other */
+  focus: function() {
+    this.dom.listItem.addClass("active");
+    this.dom.self.addClass("active");
+  }
+}
+
+
+

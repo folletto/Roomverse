@@ -13,16 +13,15 @@ html(lang='en')
     link(rel='stylesheet', href='/assets/style.css')
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,700')
   body
-    #masterbar
-      h1 WordBridge
-        span(style="color: #d0d0d0") pre-alpha
-        span= '' + userid + '#' + rooms
-    
-    #wb-rooms.col1
+    .col1
+      h1 WordBridge 
+        em Alpha
+      ol#wb-room-list
      
     .col2
-      #wb-chat.wait
-      .chat-messagebox
-        input#wb-messagebox(type='text')
+      #wb-chats.wait
     
     #wb-widgets.col3
+      aside.widget
+        h1 Global Infobox
+        p= 'User ' + userid + ' in ' + rooms

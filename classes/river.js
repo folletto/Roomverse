@@ -105,7 +105,7 @@ River.prototype = {
   },
 
   _listenMessage: function(nick, to, text, message) {
-    this.onReceive(to, nick, text, message);
+    this.onReceive(to.replace("#", ""), nick, text, message);
   },
 
   _listenChannelJoin: function(channel) {

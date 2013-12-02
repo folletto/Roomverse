@@ -128,8 +128,10 @@ io.sockets.on('connection', function wb_iosocket(socket) {
   
   socket.on('disconnect', function(data) {
     // TODO: make a softer disconnect with a timeout for reconnection
-    p.destroy();
-    delete p;
+    if (typeof p !== 'undefined') {
+      p.destroy();
+      delete p;
+    }
   });
   
 });

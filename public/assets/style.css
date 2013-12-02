@@ -5,7 +5,7 @@
 
 body {
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-size: 13px;
   
   padding: 0;
   margin: 0;
@@ -13,27 +13,11 @@ body {
   overflow: hidden;
 }
 
-/**************************************************************************************************** Master Bar */
-#masterbar {
-  background: #000000;
-  color: #ffffff;
-  height: 50px;
-  margin: 0;
-  padding: 0;
-}
-
-#masterbar h1 {
-  font-weight: normal;
-  font-size: 20px;
-  
-  margin: 0;
-  padding: 14px 20px;
-}
 
 /**************************************************************************************************** Columns */
 .col1, .col2, .col3 {
   position: absolute;
-  top: 50px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -50,13 +34,13 @@ body {
 .col2 {
   /*background: rgba(150, 255, 150, 0.5); /**/
   left: 200px;
-  right: 450px;
+  right: 300px;
 }
 
 .col3 {
   /*background: rgba(150, 150, 255, 0.5); /**/
   left: auto;
-  width: 450px;
+  width: 300px;
 }
 
 
@@ -72,10 +56,96 @@ body {
 }
 
 
-/**************************************************************************************************** Chat */
-#wb-chat {
+/**************************************************************************************************** Col 1 */
+.col1 {
+  background: #2c3443;
+}
+
+/****** Header */
+.col1 h1 {
+  background: #4c74ad;
+  color: #ffffff;
+  height: 16px;
+  margin: 0;
+  padding: 17px 10px;
+  
+  font-size: 1.0em;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.col1 h1 em {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+
+/****** List */
+#wb-room-list {
+  color: #5e6776;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#wb-room-list li {
+  display: block;
+  width: 100%;
+  
+  padding: 16px 10px;
+  
+  overflow: hidden;
+}
+
+#wb-room-list li.active {
+  background: #181f32;
+  color: #ffffff;
+}
+#wb-room-list li:hover {
+  background: #181f32;
+  color: #c0c0c0;
+}
+
+
+/**************************************************************************************************** Col 2 */
+#wb-chats {
   position: absolute;
   top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin: 0;
+}
+
+#wb-chats.wait {
+  background: #ffffff url(throbber.gif) no-repeat center center;
+}
+
+#wb-chats h2 {
+  background: #181f32;
+  color: #ffffff;
+  height: 20px;
+  margin: 0;
+  padding: 15px 20px;
+  
+  font-size: 1.2em;
+  font-weight: 200;
+}
+
+/****** Status */
+#wb-chats .wb-chat {
+  display: none;
+}
+#wb-chats .wb-chat.active {
+  display: block;
+}
+
+/****** Log */
+#wb-chats .chat-log {
+  position: absolute;
+  top: 50px;
   bottom: 40px;
   right: 0;
   left: 0;
@@ -87,37 +157,63 @@ body {
   overflow-y: auto;
 }
 
-#wb-chat.wait {
-  background: #ffffff url(throbber.gif) no-repeat center center;
-}
-
-#wb-chat li {
+#wb-chats .chat-log li {
   line-height: 1.4em;
   padding: 5px 0;
 }
 
-#wb-chat .wb-message-nick {
+#wb-chats .chat-log .wb-message-nick {
   font-weight: bold;
   color: #666666;
   display: block;
 }
 
-#wb-chat .wb-message-text {
+#wb-chats .chat-log .wb-message-text {
   
 }
 
 
-/**************************************************************************************************** Message Input */
-.chat-messagebox {
+/******* Message Input */
+#wb-chats .chat-messagebox {
   position: absolute;
   bottom: 0;
   width: 100%;
   padding: 8px 10px;
   margin: 0;
-  background: #f0f0f0;
+  background: #2c3443;
 }
 
-.chat-messagebox #wb-messagebox {
-  width: 96%;
+#wb-chats .chat-messagebox .wb-messagebox {
+  width: 95%;
 }
+
+
+/**************************************************************************************************** Col 3 */
+.col3 {
+  background: #f8f8f5;
+}
+
+
+/****** Widgets */
+.col3 .widget {
+  margin: 12px;
+  
+  border: 1px solid #e4e4e4;
+  background: #ffffff;
+}
+
+.col3 .widget h1 {
+  border-bottom: 1px solid #e4e4e4;
+  padding: 6px 12px;
+  margin: 0;
+  
+  color: #6a6a6a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.col3 .widget p {
+  padding: 0 12px;
+}
+
 
