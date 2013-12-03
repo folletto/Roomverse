@@ -214,4 +214,50 @@ WBRoom.prototype = {
 }
 
 
+/**************************************************************************************************** Modules Engine */
+// Actions doesn't require init and is self contained.
+var action = {
+  
+  actions: {},
+  
+  on: function(actionid, fx) {
+    if (!this.actions.hasOwnProperty(actionid)) this.actions[actionid] = new Array();
+    
+    this.actions[actionid].push(fx);
+  },
+  
+  has: function(actionid) {
+    if (this.actions.hasOwnProperty(actionid) && this.actions[actionid].length > 0) return this.actions[actionid].length;
+    else return false;
+  },
+  
+  emit: function(actionid, data) {
+    if (this.has(actionid)) {
+      for (var fxidx in this.actions[actionid]) {
+        this.actions[actionid][fxidx](data);
+      }
+    }
+  },
+  
+  removeListener: function(actionid, fx) {
+    if (this.has(actionid)) {
+      for (var fxidx in this.actions[actionid]) {
+        this.actions[actionid].splice(fxidx, 1);
+      }
+      if (this.actions[actionid].length === 0) delete this.actions[actionid];
+    }
+  },
+  
+  removeAllListners: function(actionid) {
+    if (actionid === undefined) {
+      // Remove all
+      this.actions = {};
+    } else {
+      // Remove all from specified actionid
+      if (this.has(actionid)) {
+        delete this.actions[actionid];
+      }
+    }
+  }
+}
 
