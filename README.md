@@ -28,3 +28,7 @@ LICENSE
 
   _Copyright (C) 2013, Davide Casali_  
   _Licensed under **GPLv3 License**_
+
+> _No sensible decision can be made any longer without taking into account   
+  not only the world as it is, but the world as it will be_  
+  – Isaac Asimov
