@@ -1,8 +1,12 @@
 {
   "irc": {
-    "server": "chat.freenode.net",
+    "server": "irc.freenode.net",
     "port": "6667",
     "secure": false,
     "sasl": false
+  },
+  
+  "defaults": {
+    "rooms": "wordbridge wordbridge-test"
   }
 }
