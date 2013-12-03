@@ -120,6 +120,9 @@ var wb = {
   roomEcho: function(room, userid, text) {
     this.dom.chats.removeClass("wait");
     
+    // Let's filter it
+    text = action.emit('room-echo', text);
+    
     if (!this.chats[room]) {
       this.chats[room] = new WBRoom(this.dom.chats, { room: room });
     }
@@ -234,9 +237,11 @@ var action = {
   emit: function(actionid, data) {
     if (this.has(actionid)) {
       for (var fxidx in this.actions[actionid]) {
-        this.actions[actionid][fxidx](data);
+        data = this.actions[actionid][fxidx](data);
       }
     }
+    
+    return data;
   },
   
   removeListener: function(actionid, fx) {
@@ -248,7 +253,7 @@ var action = {
     }
   },
   
-  removeAllListners: function(actionid) {
+  removeAllListeners: function(actionid) {
     if (actionid === undefined) {
       // Remove all
       this.actions = {};
