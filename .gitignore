@@ -1,0 +1,2 @@
+# Don't include npm installed files
+node_modules/
