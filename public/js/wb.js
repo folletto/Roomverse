@@ -22,6 +22,7 @@
  * Requires
  *   Socket.io
  *   jQuery
+ *   Backbone
  *
  */
  
@@ -160,9 +161,6 @@ WBRoom.prototype = {
     var roomList = $("#wb-room-list");
     roomList.append(_.template(this.template.roomList, data));
     this.dom.listItem = roomList.children('li.' + data.room);
-    
-    console.log(this);
-    console.log(this.dom.listItem);
     
     this.dom.listItem.click(this.clickListItem.bind(this));
     
