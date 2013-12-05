@@ -36,26 +36,20 @@ var river = require('./river');
 var Pawn = module.exports.Pawn = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 Pawn.prototype = {
   
-  socket: null,
-  r: null,
-  
-  userid: "",
-  
-  init: function(config, socket) {
+  init: function(config, configPawn, socket) {
     //
     // Initialize the server-side pawn to manage the rooms
     //
     var self = this;
     
-    // Socket.io
+    // Instance variables
     this.socket = socket;
-    this.userid = config.pawn.userid || "^ThePawn";
-    
+    this.userid = configPawn.userid || "^ThePawn";
+    this.r = new river.River(config, this.userid, configPawn.password);
     
     // River
-    this.r = new river.River(config, this.userid);
     this.r.onReady = function() {
-      self.r.joinChannel(config.pawn.rooms, function(channel) {
+      self.r.joinChannel(configPawn.rooms, function(channel) {
         self.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
       });
     }

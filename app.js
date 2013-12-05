@@ -90,6 +90,7 @@ app.all('/c', function(req, res) {
   // Session
   req.session.userid = req.body.userid;
   req.session.rooms = req.body.rooms;
+  req.session.password = req.body.password;
   
   res.render('c', {
     userid: req.body.userid,
@@ -146,11 +147,12 @@ io.sockets.on('connection', function wb_iosocket(socket) {
   
   // Create the connected object.
   // TODO: maybe a pawn manager class?
-  config.pawn = {
+  var configPawn = {
     userid: socket.handshake.session.userid,
-    rooms: socket.handshake.session.rooms && socket.handshake.session.rooms.split(" ")
+    rooms: socket.handshake.session.rooms && socket.handshake.session.rooms.split(" "),
+    password: socket.handshake.session.password
   };
-  var p = new pawn.Pawn(config, socket);
+  var p = new pawn.Pawn(config, configPawn, socket);
   //console.info(socket.handshake.session);
   
   socket.on('disconnect', function(data) {

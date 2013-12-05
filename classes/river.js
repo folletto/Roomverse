@@ -33,7 +33,7 @@ River.prototype = {
 
   onReady: null,
 
-  init: function(config, nick, onReady, onReceive) {
+  init: function(config, nick, password, onReady, onReceive) {
     //
     // Initialize the river class to manage the channels
     //
@@ -52,13 +52,14 @@ River.prototype = {
       
       secure: config.irc.secure,
       sasl: config.irc.sasl,
-      //password: 'username:password',
+      password: password,
     });
 
     // ****** Binding season
     this.ircc.addListener('error', this._listenErrors.bind(this)); // avoid the IRC client to terminate
     this.ircc.addListener('registered', this._listenRegistered.bind(this)); // triggered when connected
     this.ircc.addListener('message', this._listenMessage.bind(this)); // messages
+    //this.ircc.addListener('raw', this._listenRaw.bind(this)); // raw, use for debug
   },
   
   destroy: function() {
@@ -72,7 +73,9 @@ River.prototype = {
   },
 
 
-  /**************************************************************************************************** API */
+  /**************************************************************************************************** API
+   * Try limiting the usage of the class to these methods.
+   */
   
   /****** Calls */
   joinChannel: function(channels, fx) {
@@ -112,8 +115,18 @@ River.prototype = {
 
   /**************************************************************************************************** Handle IRC */
   _listenErrors: function(message) {
-    console.log("~~~river~~~ ERROR!");
-    console.log(message);
+    //
+    // Handle errors if possible, or fire them to the console.
+    //
+    
+    if (message.command === 'err_passwdmismatch') {
+      // ****** Password error
+      console.log("Authentication Failed.");
+    } else {
+      // ****** Everything else
+      console.log("~~~river~~~ ERROR----------------------------------------!");
+      console.log(message);
+    }
   },
 
   _listenRegistered: function(message) {
@@ -127,5 +140,10 @@ River.prototype = {
 
   _listenChannelJoin: function(channel) {
     console.log("~~~river~~~ Joined " + channel);
+  },
+  
+  _listenRaw: function(message) {
+    // Mostly used for debug...
+    console.log(message);
   }
 }
