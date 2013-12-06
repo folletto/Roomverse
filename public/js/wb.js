@@ -50,6 +50,8 @@ var wb = {
       this.bindDOM();
       this.bindSocket();
     }
+    
+    action.emit('ready');
   },
 
   bindDOM: function(messageBoxId, chatsId, roomsId, widgetsId) {
@@ -72,9 +74,6 @@ var wb = {
         box.val("");
       }
     });
-
-
-
   },
 
   bindSocket: function(socket) {
@@ -120,11 +119,15 @@ var wb = {
   roomEcho: function(room, userid, text) {
     this.dom.chats.removeClass("wait");
     
-    // Let's filter it
-    text = action.emit('room-echo', text);
-    
     if (!this.chats[room]) {
+      // Create the room UI
       this.chats[room] = new WBRoom(this.dom.chats, { room: room });
+      
+      // Then load the modules (so they can do stuff with the UI)
+      modules.loadForRoom(room, function(room) {
+        // And allow the modules to load at a proper time
+        action.emit('rooms-new', room);        
+      });
     }
     
     if (!this.activeChat) {
@@ -133,6 +136,7 @@ var wb = {
       this.activeChat = room;
     }
     
+    text = action.emit('room-echo-' + room, text);
     this.chats[room].appendItem(userid, text);
   }
 };
@@ -217,8 +221,8 @@ WBRoom.prototype = {
 }
 
 
-/**************************************************************************************************** Modules Engine */
-// Actions doesn't require init and is self contained.
+/**************************************************************************************************** Actions Engine */
+// Action doesn't require init and is self contained.
 var action = {
   
   actions: {},
@@ -237,7 +241,8 @@ var action = {
   emit: function(actionid, data) {
     if (this.has(actionid)) {
       for (var fxidx in this.actions[actionid]) {
-        data = this.actions[actionid][fxidx](data);
+        newData = this.actions[actionid][fxidx](data);
+        if (newData !== undefined) data = newData; // if action isn't a filter (no return) ensures preservation
       }
     }
     
@@ -262,6 +267,69 @@ var action = {
       if (this.has(actionid)) {
         delete this.actions[actionid];
       }
+    }
+  }
+}
+
+/**************************************************************************************************** Modules Engine */
+// Module doesn't require init and is self contained.
+var module = {}; // will contain modules list, it's outside to simplify module syntax
+var modules = {
+  
+  rooms: {},
+  path: '/modules/',
+  
+  loadForRoom: function(room, fx) {
+    //
+    // Loads all the modules required by this room
+    // Launches the callback fx() when all the modules are loaded
+    //
+    
+    // Modules always loaded
+    var globalModules = [
+      'parseUrl',
+      'test'
+    ];
+    
+    var readyCountBack = globalModules.length;
+    for (var i in globalModules) {
+      this.loadModule(globalModules[i], function(moduleName, needsInit) {
+        // Loaded for the first time. Initialize it.
+        if (needsInit) module[moduleName]();
+        
+        // When all modules are loaded, callback ready!
+        if (--readyCountBack === 0) fx(room);
+      });
+    }
+  },
+  
+  loadModule: function(name, fx, force) {
+    //
+    // Load a module if it hasn't been loaded before.
+    //
+    
+    force = force || false; // force load
+    var url = this.path + name + ".js";
+    
+    if (module.hasOwnProperty(name) && !force)  {
+      // Already loaded, just callback with false saying it was cached
+      fx(name, false);
+    } else {
+      // If the module hasn't been loaded yet, load it  
+      jQuery.getScript(url)
+        .done(function(script, textStatus) {
+          // Success! Callback with boolean true saying it was loaded.
+          fx(name, true);
+        })
+        .fail(function(jqxhr, settings, exception) {
+          // This includes both load errors and parse errors
+          if ('parsererror' == settings) {
+            console.log('Error parsing: "' + url + '".');
+          } else {
+            console.log('Unable to load module: "' + url + '" (' + settings + ', ' + jqxhr.statusText + ').');
+            console.log(jqxhr);
+          }
+        });      
     }
   }
 }
