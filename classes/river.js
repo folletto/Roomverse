@@ -44,7 +44,7 @@ River.prototype = {
     this.onReceive = onReceive || this.onReceive;
 
     // ****** Let's IRC
-    this.ircc = new irc.Client(config.irc.server, this.nick, {
+    var configIRC = {
       userName: this.nick,
       realname: "WB Test Client",
       port: config.irc.port,
@@ -52,8 +52,10 @@ River.prototype = {
       
       secure: config.irc.secure,
       sasl: config.irc.sasl,
-      password: password,
-    });
+      
+    };
+    if (password) configIRC.password = password;
+    this.ircc = new irc.Client(config.irc.server, this.nick, configIRC);
 
     // ****** Binding season
     this.ircc.addListener('error', this._listenErrors.bind(this)); // avoid the IRC client to terminate
