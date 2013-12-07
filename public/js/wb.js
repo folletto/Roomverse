@@ -244,7 +244,6 @@ Room.prototype = {
   
   notify: function(increment) {
     if (increment > 0) {
-      console.log(this.notifications);
       // Increment of the specified amount
       this.notifications = this.notifications + increment;
       this.dom.listItem.children(".notifications").html(this.notifications);
@@ -268,9 +267,15 @@ Room.prototype = {
   
   /**************************************************************************************************** Other */
   focus: function() {
+    // Reset notifications
     this.notify(0);
+    
+    // Bring the UI elements up
     this.dom.listItem.addClass("active");
     this.dom.self.addClass("active");
+    
+    // Focus on messagebox too
+    this.dom.self.find('.wb-messagebox').focus();
   }
 }
 
