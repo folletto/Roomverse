@@ -148,6 +148,7 @@ Rooms.prototype = {
   
   addIfNotExists: function(room) {
     var self = this;
+    room = room.toLowerCase();
     
     if (!this.chats.hasOwnProperty(room)) {
       // ****** Create the room UI
