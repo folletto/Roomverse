@@ -55,6 +55,19 @@ Pawn.prototype = {
     this.setSocket(socket);
   },
   
+  restore: function(config, configPawn, socket) {
+    //
+    // Restore a pawn from limbo
+    //
+    this.setSocket(socket);
+    
+    // This should restore latest room status, not the initial one... but let's start somewhere
+    //TODO: fix this to a proper restore
+    for (var i in this.configPawn.rooms) {
+      this.onJoinChannel(this.configPawn.rooms[i]);
+    }
+  },
+  
   destroy: function() {
     //
     // Called on disconnect. Let's clean up our rooms.
@@ -65,15 +78,15 @@ Pawn.prototype = {
   
   /**************************************************************************************************** River */
   onReady: function() {
-    var self = this;
-    
-    this.r.joinChannel(this.configPawn.rooms, function(channel) {
-      self.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
-    });
+    this.r.joinChannel(this.configPawn.rooms, this.onJoinChannel.bind(this));
   },
   
   onReceive: function(channel, nick, text, data) {
     this.socket.emit("message", { userid: nick, room: channel, text: text });
+  },
+  
+  onJoinChannel: function(channel) {
+    this.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
   },
   
   /**************************************************************************************************** Socket */

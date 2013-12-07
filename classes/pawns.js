@@ -50,7 +50,7 @@ Pawns.prototype = {
       this.pawns[id] = this.limbo[id];
       delete this.limbo[id];
       
-      this.pawns[id].setSocket(socket); // Reconnect
+      this.pawns[id].restore(this.config, configPawn, socket); // Restore (socket connection, ...)
       
     } else if (!this.pawns.hasOwnProperty(id)) {
       // New pawn, create
