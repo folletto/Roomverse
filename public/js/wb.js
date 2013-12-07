@@ -36,8 +36,7 @@ var wb = {
 
   dom: {},
   
-  chats: {},
-  activeChat: null,
+  rooms: null,
 
   /**************************************************************************************************** Init */
   init: function(config) {    
@@ -47,25 +46,26 @@ var wb = {
     
     if (this.socket) {
       // If the backend wrapper class is there, initialize
-      this.bindDOM();
-      this.bindSocket();
+      this.bindAllDOM();
+      this.bindAllSocket();
     }
     
     action.emit('ready');
   },
 
-  bindDOM: function(messageBoxId, chatsId, roomsId, widgetsId) {
+  bindAllDOM: function(roomListId, chatsId, widgetsId) {
+    //
+    // Binds the various events to the DOM.
+    //
     var self = this;
+    roomListId = roomListId || "wb-room-list";
     chatsId = chatsId || "wb-chats";
-    roomsId = roomsId || "wb-rooms";
     widgetsId = widgetsId || "wb-widgets";
     
-    this.dom = {
-      chats: $("#" + chatsId)
-    }
-
+    this.rooms = new Rooms(roomListId, chatsId, widgetsId);
+    
     // ****** Bind send event to all future chat textfields
-    this.dom.chats.on('keyup', 'input.wb-messagebox', function keyupEventSend() {
+    this.rooms.dom.chats.on('keyup', 'input.wb-messagebox', function keyupEventSend() {
       if(event.keyCode == 13){
         var box = $(this);
         var room = box.data("room");
@@ -75,8 +75,8 @@ var wb = {
       }
     });
   },
-
-  bindSocket: function(socket) {
+  
+  bindAllSocket: function(socket) {
     this.socket.on("bridge", this.bridgeReceive.bind(this));
     this.socket.on("message", this.messageReceive.bind(this));
   },
@@ -117,9 +117,11 @@ var wb = {
 
   /**************************************************************************************************** DOM */
   roomEcho: function(room, userid, text) {
-    this.dom.chats.removeClass("wait");
+    this.rooms.dom.chats.removeClass("wait");
     
-    if (!this.chats[room]) {
+    this.rooms.addIfNotExists(room);
+    
+    /*if (!this.chats[room]) {
       // Create the room UI
       this.chats[room] = new WBRoom(this.dom.chats, { room: room });
       
@@ -128,51 +130,114 @@ var wb = {
         // And allow the modules to load at a proper time
         action.emit('rooms-new', room);        
       });
-    }
+    }*/
     
-    if (!this.activeChat) {
+    /*if (!this.activeChat) {
       // ****** First chat, set active
       this.chats[room].focus();
       this.activeChat = room;
-    }
+    }*/
     
+    // ****** Write text to room
     text = action.emit('room-echo-' + room, text);
-    this.chats[room].appendItem(userid, text);
+    this.rooms.chats[room].appendItem(userid, text);
+    //this.chats[room].appendItem(userid, text);
+    
+    // ****** Write notification number if not active
+    if (this.rooms.activeChat != room) {
+      this.rooms.chats[room].notify(1);
+    }
+    /*if (this.activeChat != room) {
+      this.chats[room].notify(1);
+    }*/
   }
 };
 
 
-/**************************************************************************************************** UI: Chat */
-var WBRoom = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
-WBRoom.prototype = {
+/**************************************************************************************************** UI: Room Manager */
+var Rooms = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+Rooms.prototype = {
+  
+  init: function(roomListId, chatsId) {
+    //
+    // Prepare the rooms manager.
+    //
+    
+    // ****** Init instance variables
+    this.dom = {
+      list: $('#' + roomListId),
+      chats: $('#' + chatsId),
+    };
+    
+    this.chats = {}; // holds the Room object
+    
+    this.activeChat = null;
+  },
+  
+  addIfNotExists: function(room) {
+    var self = this;
+    
+    if (!this.chats.hasOwnProperty(room)) {
+      // ****** Create the room UI
+      this.chats[room] = new Room(this, { room: room });
+      
+      // ****** Then load the modules (so they can do stuff with the UI)
+      modules.loadForRoom(room, function(room) {
+        // And allow the modules to load at a proper time
+        action.emit('rooms-new', room);
+        
+        // If no chat was active, let's activate the first
+        if (!self.activeChat) self.setActive(room);
+      });
+    }
+  },
+  
+  remove: function(room) {
+    if (this.chats.hasOwnProperty(room)) {
+      delete this.chats[room];
+      action.emit('rooms-remove', room); 
+    }
+  },
+  
+  setActive: function(room) {
+    this.chats[room].focus();
+    this.activeChat = room;
+  }
+}
+
+/**************************************************************************************************** UI: Room */
+var Room = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+Room.prototype = {
   
   template: {
-    roomList: '<li class="<%= room %>"><%= room %></li>',
+    roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
     log: '<div class="wb-chat <%= room %>"> <h2><%= room %></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="wb-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
     logItem: '<li><span class="wb-message-nick"><%= userid %></span> <span class="wb-message-text"><%= text %></message></li>'
   },
   
-  init: function(parent, data) {
+  init: function(rooms, data) {
     //
     // Create DOM elements.
     //
     
-    // ****** Create instance variables
+    // ****** Init instance variables
     this.dom = {
       self: null,
       parent: null,
       listItem: null
     };
+    this.roomName = data.room;
+    this.rooms = rooms;
+    this.notifications = 0;
     
     // ****** Initialize room list
-    var roomList = $("#wb-room-list");
-    roomList.append(_.template(this.template.roomList, data));
-    this.dom.listItem = roomList.children('li.' + data.room);
+    this.rooms.dom.list.append(_.template(this.template.roomList, data));
+    this.dom.listItem = this.rooms.dom.list.children('li.' + data.room);
     
-    this.dom.listItem.click(this.clickListItem.bind(this));
+    this.dom.listItem.on('click', this.clickListItem.bind(this));
     
     // ****** Initialize chat log
-    this.dom.parent = _.isString(parent) ? $(parent) : parent; // let's get the jQuery object
+    this.dom.parent = this.rooms.dom.chats;
     this.dom.parent.append(_.template(this.template.log, data)); 
     
     this.dom.self = this.dom.parent.children('.wb-chat.' + data.room); // and again let's store the jQuery object
@@ -190,7 +255,8 @@ WBRoom.prototype = {
     }
     
     // ****** Was this scrolled?
-    var boolWasScrolled = ((this.dom.self.children('.chat-log').scrollTop() + this.dom.self.children('.chat-log').height()) >= this.dom.self.children('.chat-log').prop('scrollHeight'));
+    var SCROLL_TOLERANCE_OFFSET = 10;
+    var boolWasScrolled = ((this.dom.self.children('.chat-log').scrollTop() + this.dom.self.children('.chat-log').height()) >= this.dom.self.children('.chat-log').prop('scrollHeight') - SCROLL_TOLERANCE_OFFSET);
     
     // ****** Append
     this.dom.self.children('.chat-log').append(_.template(this.template.logItem, data));
@@ -201,20 +267,33 @@ WBRoom.prototype = {
     }
   },
   
+  notify: function(increment) {
+    if (increment > 0) {
+      console.log(this.notifications);
+      // Increment of the specified amount
+      this.notifications = this.notifications + increment;
+      this.dom.listItem.children(".notifications").html(this.notifications);
+    } else {
+      // No increment, clear
+      this.notifications = 0;
+      this.dom.listItem.children(".notifications").html("");
+    }
+  },
+  
   /**************************************************************************************************** Events */
   clickListItem: function() {
     
     // Reset
-    this.dom.listItem.parent().children('li').removeClass('active');
-    this.dom.parent.children('.wb-chat').removeClass('active');
+    this.dom.listItem.parent().children('li.active').removeClass('active');
+    this.dom.parent.children('.wb-chat.active').removeClass('active');
     
     // Activate
-    this.focus();
-    
+    this.rooms.setActive(this.roomName);
   },
   
   /**************************************************************************************************** Other */
   focus: function() {
+    this.notify(0);
     this.dom.listItem.addClass("active");
     this.dom.self.addClass("active");
   }

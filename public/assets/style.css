@@ -131,6 +131,22 @@ body {
   color: #c0c0c0;
 }
 
+#wb-room-list li .notifications {
+  padding: 0 4px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  margin: 0 0 0 6px;
+  font-size: 0.8em;
+}
+
+#wb-room-list li.active .notifications {
+  display: none;
+}
+
+#wb-room-list li .notifications:empty {
+  display: none;
+}
+
 
 /**************************************************************************************************** Col 2 */
 #wb-chats {
