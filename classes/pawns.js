@@ -90,7 +90,12 @@ Pawns.prototype = {
     //
     // Removes a pawn
     //
-    if (this.pawns.hasOwnProperty(id)) {
+    if (this.limbo.hasOwnProperty(id)) {
+      // Kill from limbo...
+      this.limbo[id].destroy();
+      delete this.limbo[id];
+    } else if (this.pawns.hasOwnProperty(id)) {
+      // KIll from active pawns...
       this.pawns[id].destroy();
       delete this.pawns[id];
     }

@@ -102,7 +102,9 @@ River.prototype = {
   },
 
   say: function(channel, text) {
-    this.ircc.say("#" + channel, text);
+    if (this.ircc) {
+      this.ircc.say("#" + channel, text);
+    }
   },
 
 
