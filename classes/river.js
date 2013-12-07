@@ -68,6 +68,7 @@ River.prototype = {
     //
     // Closing? Close IRC.
     //
+    //console.log("~~~river~~~ Killing IRC");
     var self = this;
     this.ircc.disconnect(":)", function() {
       delete self.ircc;

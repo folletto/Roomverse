@@ -35,7 +35,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var irc = require('irc');
-var pawn = require('./classes/pawn');
+var pawns = require('./classes/pawns');
 var config = require('./config.json');
 
 io.set('log level', 1);
@@ -142,25 +142,25 @@ io.set('authorization', function wb_authorization(data, callback) {
 
 // ****************************************************************************************************
 // ****** Socket.io
-// This connects to the client
+//
+// This prepare the pawns and initializes them when the socket events arrives
+//
+var pawns = new pawns.Pawns(config);
+
 io.sockets.on('connection', function wb_iosocket(socket) {
   
-  // Create the connected object.
-  // TODO: maybe a pawn manager class?
+  // ****** Connect
   var configPawn = {
     userid: socket.handshake.session.userid,
     rooms: socket.handshake.session.rooms && socket.handshake.session.rooms.split(" "),
     password: socket.handshake.session.password
   };
-  var p = new pawn.Pawn(config, configPawn, socket);
-  //console.info(socket.handshake.session);
+  pawns.new(configPawn.userid, configPawn, socket); // add a better ID by using SHA on the password?
   
+  
+  // ****** Disconnect
   socket.on('disconnect', function(data) {
-    // TODO: make a softer disconnect with a timeout for reconnection
-    if (typeof p !== 'undefined') {
-      p.destroy();
-      delete p;
-    }
+    pawns.destroy(configPawn.userid);
   });
   
 });
