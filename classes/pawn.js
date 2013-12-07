@@ -43,25 +43,16 @@ Pawn.prototype = {
     var self = this;
     
     // Instance variables
-    this.socket = socket;
     this.userid = configPawn.userid || "^ThePawn";
-    this.r = new river.River(config, this.userid, configPawn.password);
+    this.configPawn = configPawn || {};
     
     // River
-    this.r.onReady = function() {
-      self.r.joinChannel(configPawn.rooms, function(channel) {
-        self.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
-      });
-    }
+    this.r = new river.River(config, this.userid, configPawn.password);
+    this.r.onReady = this.onReady.bind(this);
+    this.r.onReceive = this.onReceive.bind(this);
     
-    this.r.onReceive = function(channel, nick, text, data) {
-      self.socket.emit("message", { userid: nick, room: channel, text: text });
-    }
-    
-    this.socket.on('message', function(packet) {
-      console.log(packet);
-      self.r.say(packet.room, packet.text);
-    });
+    // Socket
+    this.setSocket(socket);
   },
   
   destroy: function() {
@@ -70,5 +61,33 @@ Pawn.prototype = {
     //
     this.r.destroy();
     delete r;
+  },
+  
+  /**************************************************************************************************** River */
+  onReady: function() {
+    var self = this;
+    
+    this.r.joinChannel(this.configPawn.rooms, function(channel) {
+      self.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
+    });
+  },
+  
+  onReceive: function(channel, nick, text, data) {
+    this.socket.emit("message", { userid: nick, room: channel, text: text });
+  },
+  
+  /**************************************************************************************************** Socket */
+  setSocket: function(socket) {
+    //
+    // Set a new socket. Used when restoring pawns from limbo.
+    //
+    var self = this;
+    
+    this.socket = socket;
+    
+    this.socket.on('message', function(packet) {
+      console.log(packet);
+      self.r.say(packet.room, packet.text);
+    });
   }
 }

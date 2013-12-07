@@ -45,10 +45,21 @@ Pawns.prototype = {
     //
     // Creates a new pawn and associates it to the internal dictionary
     //
-    if (typeof id === 'string') {
+    if (this.limbo.hasOwnProperty(id)) {
+      // Pawn in limbo, pick up again!
+      this.pawns[id] = this.limbo[id];
+      delete this.limbo[id];
+      
+      this.pawns[id].setSocket(socket); // Reconnect
+      
+    } else if (!this.pawns.hasOwnProperty(id)) {
+      // New pawn, create
       this.pawns[id] = new pawn.Pawn(this.config, configPawn, socket);
+      
+    } else {
+      // Whops. Pawn already there.
+      // Return same connection. Wonder if it's the right thing to do... probably and error would be better?
     }
-    //TODO: restore from limbo, reset timeout
     
     return this.pawns[id];
   },
@@ -60,14 +71,17 @@ Pawns.prototype = {
     //
     var self = this;
     
-    
     if (this.pawns.hasOwnProperty(id)) {
       // Set in limbo
-      //TODO
+      this.limbo[id] = this.pawns[id];
+      delete this.pawns[id];
       
       // Destruction timeout
       setTimeout(function() {
-        self.destroy(id);
+        if (self.limbo.hasOwnProperty(id)) {
+          // Still in limbo? Sorry kid, destroying...
+          self.destroy(id);
+        }
       }, this.reconnectTimeout);
     }
   },

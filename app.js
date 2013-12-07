@@ -160,7 +160,8 @@ io.sockets.on('connection', function wb_iosocket(socket) {
   
   // ****** Disconnect
   socket.on('disconnect', function(data) {
-    pawns.destroy(configPawn.userid);
+    pawns.destroyWithHope(configPawn.userid);
+    //pawns.destroy(configPawn.userid);
   });
   
 });
