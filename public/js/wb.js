@@ -31,17 +31,12 @@
 var wb = {
 
   socket: null,
-  
   userid: "You",
-
-  dom: {},
-  
   rooms: null,
 
   /**************************************************************************************************** Init */
   init: function(config) {    
     this.socket = io.connect('http://localhost', { 'sync disconnect on unload': true });
-    
     this.userid = config.userid;
     
     if (this.socket) {
@@ -117,39 +112,16 @@ var wb = {
 
   /**************************************************************************************************** DOM */
   roomEcho: function(room, userid, text) {
-    this.rooms.dom.chats.removeClass("wait");
-    
     this.rooms.addIfNotExists(room);
-    
-    /*if (!this.chats[room]) {
-      // Create the room UI
-      this.chats[room] = new WBRoom(this.dom.chats, { room: room });
-      
-      // Then load the modules (so they can do stuff with the UI)
-      modules.loadForRoom(room, function(room) {
-        // And allow the modules to load at a proper time
-        action.emit('rooms-new', room);        
-      });
-    }*/
-    
-    /*if (!this.activeChat) {
-      // ****** First chat, set active
-      this.chats[room].focus();
-      this.activeChat = room;
-    }*/
     
     // ****** Write text to room
     text = action.emit('room-echo-' + room, text);
     this.rooms.chats[room].appendItem(userid, text);
-    //this.chats[room].appendItem(userid, text);
     
     // ****** Write notification number if not active
     if (this.rooms.activeChat != room) {
       this.rooms.chats[room].notify(1);
     }
-    /*if (this.activeChat != room) {
-      this.chats[room].notify(1);
-    }*/
   }
 };
 
@@ -187,7 +159,10 @@ Rooms.prototype = {
         action.emit('rooms-new', room);
         
         // If no chat was active, let's activate the first
-        if (!self.activeChat) self.setActive(room);
+        if (!self.activeChat) {
+          self.dom.chats.removeClass("wait");
+          self.setActive(room);
+        }
       });
     }
   },
