@@ -118,6 +118,7 @@ var wb = {
     this.rooms.addIfNotExists(room);
     
     // ****** Write text to room
+    text = this.sanitizeHTML(text); // this could be an action, but in this specific case I want to be sure
     text = action.emit('room-echo-' + room, text);
     this.rooms.chats[room].appendItem(userid, text);
     
@@ -125,6 +126,11 @@ var wb = {
     if (this.rooms.activeChat != room) {
       this.rooms.chats[room].notify(1);
     }
+  },
+  
+  /**************************************************************************************************** Other */
+  sanitizeHTML: function(string) {
+    return string.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 };
 
