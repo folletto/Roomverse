@@ -15,7 +15,7 @@ module.Test = function() {
     console.log('[TestModule] Ready.');
   });
   
-  action.on('rooms-new', function(room) {
+  action.on('rooms-add', function(room) {
     console.log('[TestModule] ' + room + ' is on!');
   });
   

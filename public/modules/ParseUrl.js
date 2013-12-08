@@ -11,7 +11,7 @@
 
 module.ParseUrl = function() {
   
-  action.on('rooms-new', function(room) {
+  action.on('rooms-add', function(room) {
     
     action.on('room-echo-' + room, function(text) {
       

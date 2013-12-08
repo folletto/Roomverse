@@ -160,7 +160,7 @@ Rooms.prototype = {
       // ****** Then load the modules (so they can do stuff with the UI)
       modules.loadForRoom(room, function(room) {
         // And allow the modules to load at a proper time
-        action.emit('rooms-new', room);
+        action.emit('rooms-add', room);
         
         // If no chat was active, let's activate the first
         if (!self.activeChat) {
