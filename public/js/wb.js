@@ -36,7 +36,7 @@ var wb = {
 
   /**************************************************************************************************** Init */
   init: function(config) {    
-    this.socket = io.connect('http://localhost', { 'sync disconnect on unload': true });
+    this.socket = io.connect('', { 'sync disconnect on unload': true });
     this.userid = config.userid;
     
     // ****** Backend is present, initialize
