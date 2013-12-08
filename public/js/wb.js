@@ -350,9 +350,8 @@ var modules = {
     // Loads all the modules required by this room
     // Launches the callback fx() when all the modules are loaded
     //
-    var self = this;
-    
     var readyCountBack = this.globalModules.length;
+    
     for (var i in this.globalModules) {
       this.loadModule(this.globalModules[i], function(moduleName) {
         // All modules loaded, let's go ahead!
@@ -360,7 +359,7 @@ var modules = {
           // Room modules are ready to run, callback
           fx(room);
         }
-      });
+      }.bind(this));
     }
   },
   
