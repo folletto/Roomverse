@@ -338,6 +338,10 @@ var modules = {
   
   rooms: {},
   path: '/modules/',
+  globalModules: [
+    'parseUrl',
+    'test'
+  ],
   
   moduleBeingLoaded: {},
   
@@ -348,15 +352,9 @@ var modules = {
     //
     var self = this;
     
-    // Modules always loaded
-    var globalModules = [
-      'parseUrl',
-      'test'
-    ];
-    
-    var readyCountBack = globalModules.length;
-    for (var i in globalModules) {
-      this.loadModule(globalModules[i], function(moduleName) {
+    var readyCountBack = this.globalModules.length;
+    for (var i in this.globalModules) {
+      this.loadModule(this.globalModules[i], function(moduleName) {
         // All modules loaded, let's go ahead!
         if (--readyCountBack === 0) {
           // Room modules are ready to run, callback
