@@ -113,6 +113,18 @@ body {
   margin: 0;
 }
 
+#wb-room-list {
+  /* Make it scrollable */
+  position: absolute;
+  top: 50px;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 #wb-room-list li {
   display: block;
   width: 100%;
@@ -145,6 +157,26 @@ body {
 
 #wb-room-list li .notifications:empty {
   display: none;
+}
+
+/****** User Box */
+#user {
+  color: #5e6776;
+  background: #181f32;
+  
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+}
+
+#user .name {
+  padding: 8px 10px 0;
+}
+
+#user .meta {
+ padding: 0 10px 8px;
 }
 
 
@@ -217,12 +249,15 @@ body {
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 8px 10px;
+  padding: 0;
   margin: 0;
   background: #2c3443;
+  
+  height: 50px;
 }
 
 #wb-chats .chat-messagebox .wb-messagebox {
+  margin: 14px 10px;
   width: 95%;
 }
 
