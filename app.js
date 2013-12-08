@@ -46,7 +46,9 @@ io.set('log level', 1);
 // ****** Middleware
 
 // Post data
-app.use(express.bodyParser());
+//app.use(express.bodyParser()); Deprecated in Connect 3.0
+app.use(express.json());
+app.use(express.urlencoded());
 
 // Sessions
 var SESSION_SECRET = 'chumbawamba';
