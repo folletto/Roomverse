@@ -1,0 +1,139 @@
+/*
+ * Stylesheet for the Login
+ * This file is part of WordBridge.
+ *
+ * Copyright (C) 2013 Davide 'Folletto' Casali <folletto AT gmail DOT com>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ******************************************************************************************
+ *
+ * The login has split out just to keep one style that handles strictly the chat items.
+ * In the future this will be probably part of something else.
+ * 
+ */
+ 
+ body {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  
+  padding: 0;
+  margin: 0;
+  
+  overflow: hidden;
+  
+  background: #f8f8f5;
+}
+
+
+/**************************************************************************************************** Layout */
+.wrapper {
+  width: 330px;
+  margin: 80px auto;
+}
+
+
+/**************************************************************************************************** Widget General */
+.widget {
+  margin: 12px;
+  
+  border: 1px solid #e4e4e4;
+  background: #ffffff;
+}
+
+.widget h1 {
+  border-bottom: 1px solid #e4e4e4;
+  padding: 6px 12px;
+  margin: 0;
+  
+  color: #6a6a6a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.widget p {
+  padding: 0 12px;
+}
+
+
+/**************************************************************************************************** Icon */
+.wrapper img#logo {
+  padding: 0 12px;
+}
+
+
+/**************************************************************************************************** Login Box */
+.widget.login form {
+  margin: 8px 12px;
+  overflow: auto;
+}
+
+.widget.login label,
+.widget.login input,
+.widget.login textarea {
+  display: block;
+  
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+}
+
+.widget.login label {
+  padding: 10px 0 4px;
+  color: #a0a0a0;
+  font-weight: 100;
+}
+
+.widget.login input,
+.widget.login textarea {
+  display: block;
+  width: 95%;
+  padding: 6px 4px;
+  
+  border: 1px solid #dddddd;
+  
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  
+  outline: none;
+}
+
+.widget.login input:focus,
+.widget.login textarea:focus {
+  
+  border: 1px solid #4c74ad;
+}
+
+.widget.login input[type=submit] {
+  float: right;
+  width: 50%;
+  margin: 15px 0 10px;
+  
+  color: #666666;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  
+  background: #f7f7f7;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,11), 0 1px 0 rgba(0,0,0,0.1);
+  
+  outline: none;
+}
+
+.widget.login input[type=submit]:active {
+  box-shadow: none;
+}
+
+.widget.login input[type=submit]:focus,
+.widget.login input[type=submit]:hover {
+  color: #000000;
+  border: 1px solid #aaaaaa;
+}

@@ -1,17 +1,23 @@
 doctype 5
 html(lang="en")
   head
-    title WordBridge
+    title WordBridge &middot; Login
+    link(rel='stylesheet', href='/assets/style-pages.css')
+    link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,700')
   body
-    h1 Login
-    form(action='/c', method='post')
-      label(for='userid') Nickname
-      input(id='userid', name='userid', value=userid)
+    div.wrapper
+      img#logo(src='/assets/icon@2x.png', width='60px', width='60px')
       
-      label(for='password') Password (if any)
-      input(id='password', name='password', type="password")
-      
-      label(for='rooms') Channels
-      input(id='rooms', name='rooms', value=rooms)
-      
-      input(type='submit', value="Login")
+      div.widget.login
+        h1 Login
+        form(action='/c', method='post')
+          label(for='userid') Nickname
+          input(id='userid', name='userid', value=userid)
+          
+          label(for='password') Password (if any)
+          input(id='password', name='password', type="password")
+          
+          label(for='rooms') Channels
+          textarea(id='rooms', name='rooms', value=rooms)= rooms
+          
+          input(type='submit', value="Login")
