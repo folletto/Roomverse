@@ -39,13 +39,16 @@ var wb = {
     this.socket = io.connect('http://localhost', { 'sync disconnect on unload': true });
     this.userid = config.userid;
     
+    // ****** Backend is present, initialize
     if (this.socket) {
-      // If the backend wrapper class is there, initialize
       this.bindAllDOM();
       this.bindAllSocket();
     }
     
-    action.emit('ready');
+    // ****** Let's go with the first round of modules!
+    modules.loadOnReady(function loadOnReadyCallback() {
+      action.emit('ready');
+    }.bind(this));
   },
 
   bindAllDOM: function(roomListId, chatsId, widgetsId) {
@@ -345,19 +348,43 @@ var modules = {
   
   moduleBeingLoaded: {},
   
+  loadOnReady: function(fx) {
+    //
+    // Load the first batch of modules.
+    // These are the ones that can run at the very beginning before any room is loaded
+    //
+    this.loadModules(this.globalModules, function loadOnReadyCallback() {
+      fx();
+    }.bind(this));
+  },
+  
   loadForRoom: function(room, fx) {
     //
     // Loads all the modules required by this room
     // Launches the callback fx() when all the modules are loaded
     //
-    var readyCountBack = this.globalModules.length;
     
-    for (var i in this.globalModules) {
-      this.loadModule(this.globalModules[i], function(moduleName) {
+    //TODO: load list of room-specific modules
+    var roomModules = this.globalModules; // let's reuse the global ones for now
+    
+    // Load
+    this.loadModules(roomModules, function loadForRoomCallback() {
+      fx(room);
+    }.bind(this));
+  },
+  
+  loadModules: function(list, fx) {
+    //
+    // Loads all the modules in the list
+    //
+    var readyCountBack = list.length;
+    
+    for (var i in list) {
+      this.loadModule(list[i], function(moduleName) {
         // All modules loaded, let's go ahead!
         if (--readyCountBack === 0) {
           // Room modules are ready to run, callback
-          fx(room);
+          fx();
         }
       }.bind(this));
     }

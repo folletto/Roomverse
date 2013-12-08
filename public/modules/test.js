@@ -11,8 +11,12 @@
 
 module.test = function() {
   
+  action.on('ready', function() {
+    console.log('[TestModule] Ready.');
+  });
+  
   action.on('rooms-new', function(room) {
-    console.log('I\'m ALIVE for ' + room);
+    console.log('[TestModule] ' + room + ' is on!');
   });
   
 }
