@@ -37,6 +37,7 @@ body {
 }
 
 
+
 /**************************************************************************************************** Columns */
 .col1, .col2, .col3 {
   position: absolute;
@@ -76,6 +77,11 @@ body {
   border: 1px solid #e0e0e0;
   
   font-size: 16px;
+}
+
+input {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 13px;
 }
 
 
@@ -259,8 +265,13 @@ body {
 #wb-chats .chat-messagebox .wb-messagebox {
   margin: 14px 10px;
   width: 95%;
+  
+  outline: none;
 }
 
+#wb-chats .chat-messagebox .wb-messagebox:focus {
+  border-color: #4c74ad
+}
 
 /**************************************************************************************************** Col 3 */
 .col3 {
