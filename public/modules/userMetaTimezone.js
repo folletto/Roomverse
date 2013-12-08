@@ -12,7 +12,7 @@
 module.userMetaTimezone = function() {
   
   action.on('ready', function() {
-    var timezoneOffset = (new Date()).getTimezoneOffset();
+    var timezoneOffset = (new Date()).getTimezoneOffset() / 60;
     if (timezoneOffset == 0) timezoneOffset = '+0';
     
     var metaTimezone = 'UTC' + timezoneOffset;
