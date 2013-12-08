@@ -339,11 +339,14 @@ var modules = {
   rooms: {},
   path: '/modules/',
   
+  moduleBeingLoaded: {},
+  
   loadForRoom: function(room, fx) {
     //
     // Loads all the modules required by this room
     // Launches the callback fx() when all the modules are loaded
     //
+    var self = this;
     
     // Modules always loaded
     var globalModules = [
@@ -353,12 +356,12 @@ var modules = {
     
     var readyCountBack = globalModules.length;
     for (var i in globalModules) {
-      this.loadModule(globalModules[i], function(moduleName, needsInit) {
-        // Loaded for the first time. Initialize it.
-        if (needsInit) module[moduleName]();
-        
-        // When all modules are loaded, callback ready!
-        if (--readyCountBack === 0) fx(room);
+      this.loadModule(globalModules[i], function(moduleName) {
+        // All modules loaded, let's go ahead!
+        if (--readyCountBack === 0) {
+          // Room modules are ready to run, callback
+          fx(room);
+        }
       });
     }
   },
@@ -367,20 +370,35 @@ var modules = {
     //
     // Load a module if it hasn't been loaded before.
     //
-    
     force = force || false; // force load
     var url = this.path + name + ".js";
     
     if (module.hasOwnProperty(name) && !force)  {
-      // Already loaded, just callback with false saying it was cached
-      fx(name, false);
+      // Already loaded, just callback
+      fx(name);
+    } else if (this.moduleBeingLoaded.hasOwnProperty(name)) {
+      // ****** In loading queue
+      // Delay callback until module is loaded
+      this.moduleBeingLoaded[name].push(fx);
     } else {
-      // If the module hasn't been loaded yet, load it  
+      // ****** Requires loading
+      // Create the module immediately in the class, so the system knows it's being loaded
+      this.moduleBeingLoaded[name] = new Array();
+      
+      // If the module hasn't been loaded yet, load it
       jQuery.getScript(url)
         .done(function(script, textStatus) {
-          // Success! Callback with boolean true saying it was loaded.
-          fx(name, true);
-        })
+          // Success! Initialize module
+          module[name]();
+          for (var i in this.moduleBeingLoaded[name]) {
+            // Call initialization queue
+            this.moduleBeingLoaded[name][i]();
+          }
+          delete this.moduleBeingLoaded[name];
+          
+          // Callback true saying it was loaded.
+          fx(name);
+        }.bind(this))
         .fail(function(jqxhr, settings, exception) {
           // This includes both load errors and parse errors
           if ('parsererror' == settings) {
@@ -389,7 +407,7 @@ var modules = {
             console.log('Unable to load module: "' + url + '" (' + settings + ', ' + jqxhr.statusText + ').');
             console.log(jqxhr);
           }
-        });      
+        }.bind(this));      
     }
   }
 }
