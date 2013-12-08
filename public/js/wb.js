@@ -342,9 +342,9 @@ var modules = {
   rooms: {},
   path: '/modules/',
   globalModules: [
-    'parseUrl',
-    'userMetaTimezone',
-    'test'
+    'ParseUrl',
+    'UserMetaTimezone',
+    'Test'
   ],
   
   moduleBeingLoaded: {},

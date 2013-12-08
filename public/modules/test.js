@@ -9,7 +9,7 @@
  *
  */
 
-module.test = function() {
+module.Test = function() {
   
   action.on('ready', function() {
     console.log('[TestModule] Ready.');

@@ -9,7 +9,7 @@
  *
  */
 
-module.parseUrl = function() {
+module.ParseUrl = function() {
   
   action.on('rooms-new', function(room) {
     

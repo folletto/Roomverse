@@ -9,7 +9,7 @@
  *
  */
  
-module.userMetaTimezone = function() {
+module.UserMetaTimezone = function() {
   
   action.on('ready', function() {
     var timezoneOffset = -1 * ((new Date()).getTimezoneOffset() / 60);
