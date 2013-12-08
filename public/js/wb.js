@@ -343,6 +343,7 @@ var modules = {
   path: '/modules/',
   globalModules: [
     'parseUrl',
+    'userMetaTimezone',
     'test'
   ],
   
