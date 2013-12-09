@@ -48,7 +48,7 @@ module.ParseUrl = function() {
     
     if (match.match(/(.gif|.png|.jpg|.jpeg)\s?$/i)) {
       // Is image
-      out = ' <img src="' + outHref + '" /> ';
+      out = ' <a href="' + outHref + '" target="_blank"><img src="' + outHref + '" /></a> ';
     } else {
       // Is link
       out = ' <a href="' + outHref + '" target="_blank">' + outText + '</a> ';
