@@ -405,7 +405,8 @@ var modules = {
     var url = this.path + name + ".js";
     
     if (module.hasOwnProperty(name) && !force)  {
-      // Already loaded, just callback
+      // ****** Already loaded
+      // Just callback
       fx(name);
     } else if (this.moduleBeingLoaded.hasOwnProperty(name)) {
       // ****** In loading queue
@@ -421,14 +422,14 @@ var modules = {
         .done(function(script, textStatus) {
           // Success! Initialize module
           module[name]();
+          
+          // Callback this and all the queued ones
+          fx(name);
           for (var i in this.moduleBeingLoaded[name]) {
             // Call initialization queue
-            this.moduleBeingLoaded[name][i]();
+            this.moduleBeingLoaded[name][i](name);
           }
           delete this.moduleBeingLoaded[name];
-          
-          // Callback true saying it was loaded.
-          fx(name);
         }.bind(this))
         .fail(function(jqxhr, settings, exception) {
           // This includes both load errors and parse errors
