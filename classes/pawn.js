@@ -40,9 +40,10 @@ Pawn.prototype = {
     //
     // Initialize the server-side pawn to manage the rooms
     //
-    var self = this;
     
-    // Instance variables
+    // ****** Instance variables
+    this.r = null;
+    this.socket = null;
     this.userid = configPawn.userid || "^ThePawn";
     this.configPawn = configPawn || {};
     
@@ -54,6 +55,31 @@ Pawn.prototype = {
     // Socket
     this.setSocket(socket);
   },
+  
+  /*init: function(config, configPawn, socket) {
+    //
+    // Initialize the I/O and listeners for the client
+    //
+    
+    // ****** Instance variables
+    this.r = null;
+    this.socket = null;
+    this.userid = configPawn.userid || "^ThePawn";
+    this.configPawn = configPawn || {};
+    
+    // ****** Prepare socket
+    this.setSocket(socket);
+    
+    // ****** River I/O
+    this.r = new river.River(config, this.userid, configPawn.password, function() {
+      // Ready
+      this.r.joinChannel(this.configPawn.rooms, function(channel) {
+        // Channel joined
+        this.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
+      }.bind(this));
+    }.bind(this));
+    
+  },*/
   
   restore: function(config, configPawn, socket) {
     //
@@ -81,12 +107,12 @@ Pawn.prototype = {
     this.r.joinChannel(this.configPawn.rooms, this.onJoinChannel.bind(this));
   },
   
-  onReceive: function(channel, nick, text, data) {
-    this.socket.emit("message", { userid: nick, room: channel, text: text });
-  },
-  
   onJoinChannel: function(channel) {
     this.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
+  },
+  
+  onReceive: function(channel, nick, text, data) {
+    this.socket.emit("message", { userid: nick, room: channel, text: text });
   },
   
   /**************************************************************************************************** Socket */
@@ -94,13 +120,32 @@ Pawn.prototype = {
     //
     // Set a new socket. Used when restoring pawns from limbo.
     //
-    var self = this;
-    
     this.socket = socket;
     
-    this.socket.on('message', function(packet) {
-      console.log(packet);
-      self.r.say(packet.room, packet.text);
-    });
+    for (var eventName in this.listeners) {
+      this.socket.on(eventName, this.listeners[eventName].bind(this));
+    }
   }
 }
+
+
+/**************************************************************************************************** Listeners */
+// This dictionary contains all the listeners for the client emitted events
+// (the slightly different syntax is on purpose)
+Pawn.prototype.listeners = {
+  
+  'message': function(packet) {
+    console.log(packet);
+    this.r.say(packet.room, packet.text);
+  },
+  
+  'meta': function() {
+    // TODO: this will do an internal room broadcast
+  },
+  
+  'bridge-users': function() {
+    // TODO
+  }
+  
+}
+
