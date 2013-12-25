@@ -302,10 +302,16 @@ var action = {
     this.actions[actionid].push(fx);
   },
   
-  once: function(event, fx) {
+  onMany: function(obj, parent) {
+    for (var actionid in obj) {
+      this.on(obj[actionid].bind(parent));
+    }
+  },
+  
+  once: function(actionid, fx) {
     var self = this; // because bind() makes the function un-off-able (it's wrapped)
-    this.on(event, function onceCallback() {
-      self.off(event, onceCallback);
+    this.on(actionid, function onceCallback() {
+      self.off(actionid, onceCallback);
       fx.apply(this, arguments);
     });
   },
