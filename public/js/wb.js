@@ -302,6 +302,14 @@ var action = {
     this.actions[actionid].push(fx);
   },
   
+  once: function(event, fx) {
+    var self = this; // because bind() makes the function un-off-able (it's wrapped)
+    this.on(event, function onceCallback() {
+      self.off(event, onceCallback);
+      fx.apply(this, arguments);
+    });
+  },
+  
   has: function(actionid) {
     if (this.actions.hasOwnProperty(actionid) && this.actions[actionid].length > 0) return this.actions[actionid].length;
     else return false;
@@ -309,32 +317,30 @@ var action = {
   
   emit: function(actionid, data) {
     if (this.has(actionid)) {
-      for (var fxidx in this.actions[actionid]) {
-        newData = this.actions[actionid][fxidx](data);
-        if (newData !== undefined) data = newData; // if action isn't a filter (no return) ensures preservation
+      var fxs = this.actions[actionid].slice(0); // mid-emit changes won't affect result for this emit
+      for (var fxidx in fxs) {
+        ret = fxs[fxidx](data);
+        if (ret !== undefined) data = ret; // if action isn't a filter (no return) ensures preservation
       }
     }
     
     return data;
   },
   
-  removeListener: function(actionid, fx) {
-    if (this.has(actionid)) {
-      for (var fxidx in this.actions[actionid]) {
-        this.actions[actionid].splice(fxidx, 1);
-      }
-      if (this.actions[actionid].length === 0) delete this.actions[actionid];
-    }
-  },
-  
-  removeAllListeners: function(actionid) {
+  off: function(actionid, fx) {
     if (actionid === undefined) {
-      // Remove all
+      // ****** Remove everything
       this.actions = {};
-    } else {
-      // Remove all from specified actionid
+    } else if (fx === undefined) {
+      // ****** Remove all from action
       if (this.has(actionid)) {
         delete this.actions[actionid];
+      }
+    } else {
+      // ****** Remove specific function from action
+      if (this.has(actionid)) {
+        this.actions[actionid].splice(this.actions[actionid].indexOf(fx), 1); // find the function and cut it out
+        if (this.actions[actionid].length === 0) delete this.actions[actionid];
       }
     }
   }
