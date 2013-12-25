@@ -48,38 +48,16 @@ Pawn.prototype = {
     this.configPawn = configPawn || {};
     
     // River
-    this.r = new river.River(config, this.userid, configPawn.password);
-    this.r.onReady = this.onReady.bind(this);
+    // this.r = river.RiverFactory.new('irc', username, password, riverConfig, function() {});
+    this.r = new river.River(config.pipe, this.userid, configPawn.password, function() {
+      // Ready
+      this.r.joinChannel(this.configPawn.rooms, this.onJoinChannel.bind(this));
+    }.bind(this));
     this.r.onReceive = this.onReceive.bind(this);
     
     // Socket
     this.setSocket(socket);
   },
-  
-  /*init: function(config, configPawn, socket) {
-    //
-    // Initialize the I/O and listeners for the client
-    //
-    
-    // ****** Instance variables
-    this.r = null;
-    this.socket = null;
-    this.userid = configPawn.userid || "^ThePawn";
-    this.configPawn = configPawn || {};
-    
-    // ****** Prepare socket
-    this.setSocket(socket);
-    
-    // ****** River I/O
-    this.r = new river.River(config, this.userid, configPawn.password, function() {
-      // Ready
-      this.r.joinChannel(this.configPawn.rooms, function(channel) {
-        // Channel joined
-        this.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
-      }.bind(this));
-    }.bind(this));
-    
-  },*/
   
   restore: function(config, configPawn, socket) {
     //
@@ -103,10 +81,6 @@ Pawn.prototype = {
   },
   
   /**************************************************************************************************** River */
-  onReady: function() {
-    this.r.joinChannel(this.configPawn.rooms, this.onJoinChannel.bind(this));
-  },
-  
   onJoinChannel: function(channel) {
     this.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
   },
@@ -114,6 +88,28 @@ Pawn.prototype = {
   onReceive: function(channel, nick, text, data) {
     this.socket.emit("message", { userid: nick, room: channel, text: text });
   },
+  
+  
+  /**************************************************************************************************** Listeners */
+  // This dictionary contains all the listeners for the client emitted events
+  // (the slightly different syntax is on purpose)
+  listeners: {
+    
+    'message': function(packet) {
+      console.log(packet);
+      this.r.say(packet.room, packet.text);
+    },
+    
+    'meta': function() {
+      // TODO: this will do an internal room broadcast
+    },
+    
+    'bridge-users': function() {
+      // TODO
+    }
+    
+  },
+  
   
   /**************************************************************************************************** Socket */
   setSocket: function(socket) {
@@ -126,26 +122,5 @@ Pawn.prototype = {
       this.socket.on(eventName, this.listeners[eventName].bind(this));
     }
   }
-}
-
-
-/**************************************************************************************************** Listeners */
-// This dictionary contains all the listeners for the client emitted events
-// (the slightly different syntax is on purpose)
-Pawn.prototype.listeners = {
-  
-  'message': function(packet) {
-    console.log(packet);
-    this.r.say(packet.room, packet.text);
-  },
-  
-  'meta': function() {
-    // TODO: this will do an internal room broadcast
-  },
-  
-  'bridge-users': function() {
-    // TODO
-  }
-  
 }
 

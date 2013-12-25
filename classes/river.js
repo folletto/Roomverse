@@ -33,34 +33,37 @@ River.prototype = {
 
   onReady: null,
 
-  init: function(config, nick, password, onReady, onReceive) {
+  init: function(config, nick, password, fx) {
     //
     // Initialize the river class to manage the channels
     //
-    console.log("~~~river~~~ Starting...");
+    console.log("~~~river~~~ Starting for %s...", nick);
 
     this.nick = nick || "^WB-Pawn";
-    this.onReady = onReady || this.onReady;
-    this.onReceive = onReceive || this.onReceive;
+    this.onReady = fx || this.onReady;
 
     // ****** Let's IRC
-    var configIRC = {
+    config.userName = this.nick;
+    config.realName = this.nick + " (WB Test Client)";
+    if (password) config.password = password;
+    /*var configIRC = {
       userName: this.nick,
-      realname: "WB Test Client",
-      port: config.irc.port,
+      realname: this.nick + " (WB Test Client)",
+      port: config.port,
       channels: [],
       
-      secure: config.irc.secure,
-      sasl: config.irc.sasl,
+      secure: config.secure,
+      sasl: config.sasl,
       
     };
-    if (password) configIRC.password = password;
-    this.ircc = new irc.Client(config.irc.server, this.nick, configIRC);
+    if (password) configIRC.password = password;*/
+    this.ircc = new irc.Client(config.server, this.nick, config);
 
     // ****** Binding season
     this.ircc.addListener('error', this._listenErrors.bind(this)); // avoid the IRC client to terminate
     this.ircc.addListener('registered', this._listenRegistered.bind(this)); // triggered when connected
     this.ircc.addListener('message', this._listenMessage.bind(this)); // messages
+    this.ircc.addListener('names', this._listenNames.bind(this)); // names
     //this.ircc.addListener('raw', this._listenRaw.bind(this)); // raw, use for debug
   },
   
@@ -84,14 +87,16 @@ River.prototype = {
   joinChannel: function(channels, fx) {
     var self = this;
     
-    if (channels.length > 0) {
-      for (var i in channels) {
-        console.log("~~~river~~~ Joining #" + channels[i]);
-        this.ircc.join("#" + channels[i], function(nick, message) { 
-          var channel = message.args[0].replace(/#/, "");
-          if (fx) fx(channel)
-          else self._listenChannelJoin(channel);
-        });
+    if (channels) {
+      if (channels.length > 0) {
+        for (var i in channels) {
+          console.log("~~~river~~~ Joining #" + channels[i]);
+          this.ircc.join("#" + channels[i], function(nick, message) { 
+            var channel = message.args[0].replace(/#/, "");
+            if (fx) fx(channel)
+            else self._listenChannelJoin(channel);
+          });
+        }
       }
     }
   },
@@ -106,7 +111,12 @@ River.prototype = {
       this.ircc.say("#" + channel, text);
     }
   },
-
+  
+  getUsers: function(channel) {
+    if (this.ircc) {
+      this.ircc.send('NAMESX', channel);
+    }
+  },
 
   /****** Events */
   onReady: function() {
@@ -145,6 +155,11 @@ River.prototype = {
 
   _listenChannelJoin: function(channel) {
     console.log("~~~river~~~ Joined " + channel);
+  },
+  
+  _listenNames: function(channel, nicks) {
+    // Triggered when asking list of users
+    console.log('channel: ', nicks);
   },
   
   _listenRaw: function(message) {
