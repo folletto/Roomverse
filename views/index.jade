@@ -14,8 +14,9 @@ html(lang="en")
           label(for='userid') Nickname
           input(id='userid', name='userid', value=userid)
           
-          label(for='password') Password (if any)
-          input(id='password', name='password', type="password")
+          if requirePassword
+            label(for='password') Password
+            input(id='password', name='password', type="password")
           
           label(for='rooms') Channels
           textarea(id='rooms', name='rooms', value=rooms)= rooms
