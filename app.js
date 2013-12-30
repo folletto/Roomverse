@@ -84,7 +84,7 @@ app.get('/', function(req, res) {
   res.render('index', {
     userid: req.session.userid || 'pawnpawnpawn',
     requirePassword: !!config.pipe.sasl, // TODO: must be made protocol-independent on River rewrite
-    rooms: req.session.rooms || config.defaults.rooms || 'wordbridge-bots'
+    rooms: req.query.rooms || req.session.rooms || config.defaults.rooms || 'wordbridge-bots'
   });
 });
 
