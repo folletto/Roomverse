@@ -73,7 +73,7 @@ app.set('view engine', 'jade');
 
 // ****************************************************************************************************
 // ****** HTTP + Express
-server.listen(3000);
+server.listen(process.env.PORT || 3000);
 app.use(express.static(__dirname + "/public"));
 
 
