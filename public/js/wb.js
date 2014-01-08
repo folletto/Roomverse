@@ -84,7 +84,7 @@ var wb = {
   },
   
   /**************************************************************************************************** Listeners for IRC */
-  // This dictionary contains all the listeners for the pipe emitted events
+  // This dictionary contains all the listeners for the socket emitted events
   listenersForServer: {
     
     'message': function(packet) {
@@ -92,10 +92,29 @@ var wb = {
       this.roomEcho(packet.room, packet.userid, packet.text);
     },
     
+    'room-join': function() {
+      //TODO
+    },
+    
     'users-join': function(roomAndUsers) {
-      //console.log(channelAndUsers);
-      $("." + roomAndUsers.room + ".wb-chat-users").text(roomAndUsers.length);
-    }
+      //console.log(roomAndUsers);
+      var $badge = $(".wb-chat." + roomAndUsers.room + " .wb-chat-users");
+      
+      var prevCount = parseInt($badge.text());
+      if (!(prevCount > 0)) prevCount = 0;
+      
+      $badge.text((prevCount + roomAndUsers.users.length) + " users");
+    },
+    
+    'users-part': function(roomAndUsers) {
+      //console.log(roomAndUsers);
+      var $badge = $(".wb-chat." + roomAndUsers.room + " .wb-chat-users");
+      
+      var prevCount = parseInt($badge.text());
+      if (!(prevCount > 0)) prevCount = 0;
+      
+      $badge.text((prevCount - roomAndUsers.users.length) + " users");
+    },
     
   },
   

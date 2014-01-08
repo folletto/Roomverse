@@ -211,6 +211,25 @@ input {
   font-weight: 200;
 }
 
+#wb-chats .wb-chat .wb-chat-users {
+  display: block;
+  top: 0;
+  right: 0;
+  position: absolute;
+  padding: 4px;
+  margin: 12px;
+  
+  background-color: #393f4f;
+  color: #cccccc;
+  font-size: 0.8em;
+  
+  border-radius: 4px;
+  
+}
+#wb-chats .wb-chat .wb-chat-users:empty {
+  display: none;
+}
+
 /****** Status */
 #wb-chats .wb-chat {
   display: none;

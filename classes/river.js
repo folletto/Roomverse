@@ -62,6 +62,41 @@ River.prototype = {
     });
   },
   
+  /**************************************************************************************************** API */
+  joinChannel: function(channels) {
+    var self = this;
+    
+    if (channels) {
+      if (channels.length > 0) {
+        for (var i in channels) {
+          console.log("~~~river~~~ Joining #" + channels[i]);
+          this.ircc.join("#" + channels[i], function(nick, message) { 
+            var channel = message.args[0].replace(/#/, "");
+            self.emit('room-join', channel);
+          });
+        }
+      }
+    }
+  },
+
+  leaveChannel: function(channel, fx) {
+    console.log("~~~river~~~ Leaving #" + channel);
+    this.ircc.part('#' + channel, fx);
+  },
+
+  say: function(channel, text) {
+    if (this.ircc) {
+      this.ircc.say("#" + channel, text);
+    }
+  },
+  
+  getUsers: function(channel) {
+    if (this.ircc) {
+      this.ircc.send('NAMES', '#' + channel);
+    }
+  },
+  
+  
   /**************************************************************************************************** Listeners for IRC */
   // This dictionary contains all the listeners for the pipe emitted events
   listenersForIRC: {
@@ -99,10 +134,52 @@ River.prototype = {
     },
     
     'names': function(channel, nicks) {
+      //
+      // Trigger the same callback as join
+      //
       var users = [];
       for (var key in nicks) users.push(key);
       
       this.emit('users-join', { room: channel.replace("#", ""), users: users });
+    },
+    
+    'join': function(channel, nick, message) {
+      //
+      // A user has joined
+      //
+      this.emit('users-join', { room: channel.replace("#", ""), users: [nick] });
+    },
+    
+    'part': function(channel, nick, reason, message) {
+      //
+      // A user has parted
+      //
+      this.emit('users-part', { room: channel.replace("#", ""), users: [nick] });
+    },
+    
+    'quit': function(nick, reason, channels, message) {
+      //
+      // A user quit (so, parted as well, but multiple channels), normalizing ping
+      //
+      for (var i in channels) {
+        this.emit('users-part', { room: channels[i].replace("#", ""), users: [nick] });
+      }
+    },
+    
+    'kill': function(nick, reason, channels, message) {
+      //
+      // A user was killed by the server (so, parted as well, but multiple channels), normalizing ping
+      //
+      for (var i in channels) {
+        this.emit('users-part', { room: channels[i].replace("#", ""), users: [nick] });
+      }
+    },
+    
+    'kick': function(nick, reason, channels, message) {
+      //
+      // A user was kicked, so, parted
+      //
+      this.emit('users-part', { room: channel.replace("#", ""), users: [nick] });
     },
     
     'raw': function(message) {
@@ -111,6 +188,7 @@ River.prototype = {
     }
        
   },
+  
   
   /**************************************************************************************************** Bind Events */
   setIRC: function(ircc) {
@@ -122,39 +200,6 @@ River.prototype = {
     for (var eventName in this.listenersForIRC) {
       this.ircc.addListener(eventName, this.listenersForIRC[eventName].bind(this));
     }
-  },
-
-  /**************************************************************************************************** API */
-  joinChannel: function(channels) {
-    var self = this;
-    
-    if (channels) {
-      if (channels.length > 0) {
-        for (var i in channels) {
-          console.log("~~~river~~~ Joining #" + channels[i]);
-          this.ircc.join("#" + channels[i], function(nick, message) { 
-            var channel = message.args[0].replace(/#/, "");
-            self.emit('channel-join', channel);
-          });
-        }
-      }
-    }
-  },
-
-  leaveChannel: function(channel, fx) {
-    console.log("~~~river~~~ Leaving #" + channel);
-    this.ircc.part('#' + channel, fx);
-  },
-
-  say: function(channel, text) {
-    if (this.ircc) {
-      this.ircc.say("#" + channel, text);
-    }
-  },
-  
-  getUsers: function(channel) {
-    if (this.ircc) {
-      this.ircc.send('NAMESX', channel);
-    }
   }
+  
 }

@@ -50,16 +50,6 @@ Pawn.prototype = {
     // River
     this.setRiver(new River(config.pipe, this.userid, configPawn.password));
     
-    // this.r = river.RiverFactory.new('irc', username, password, riverConfig, function() {});
-    //this.setRiver(new river.River(config.pipe, this.userid, this.configPawn.password));
-    
-    
-    /*this.r = new River(config.pipe, this.userid, configPawn.password, function() {
-      // Ready
-      this.r.joinChannel(this.configPawn.rooms, this.onJoinChannel.bind(this));
-    }.bind(this));
-    this.r.onReceive = this.onReceive.bind(this);*/
-    
     // Socket
     this.setSocket(socket);
   },
@@ -73,8 +63,8 @@ Pawn.prototype = {
     // This should restore latest room status, not the initial one... but let's start somewhere
     //TODO: fix this to a proper restore
     for (var i in this.configPawn.rooms) {
-      this.listenersForRiver['channel-join'].call(this, this.configPawn.rooms[i]);
-      //this.onJoinChannel(this.configPawn.rooms[i]);
+      this.listenersForRiver['room-join'].call(this, this.configPawn.rooms[i]);
+      this.river.getUsers(this.configPawn.rooms[i]);
     }
   },
   
@@ -115,12 +105,16 @@ Pawn.prototype = {
       this.socket.emit('message', { userid: message.userid, room: message.room, text: message.text });
     },
     
-    'channel-join': function(channel) {
+    'room-join': function(channel) {
       this.socket.emit('message', { userid: "Bridge", room: channel, text: "Joined #" + channel });
     },
     
-    'users-join': function(channelAndUsers) {
-      this.socket.emit('users-join', channelAndUsers);
+    'users-join': function(roomAndUsers) {
+      this.socket.emit('users-join', roomAndUsers);
+    },
+    
+    'users-part': function(roomAndUsers) {
+      this.socket.emit('users-part', roomAndUsers);
     }
        
   },
