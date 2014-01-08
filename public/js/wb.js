@@ -74,42 +74,39 @@ var wb = {
     });
   },
   
-  bindAllSocket: function(socket) {
-    this.socket.on("bridge", this.bridgeReceive.bind(this));
-    this.socket.on("message", this.messageReceive.bind(this));
+  bindAllSocket: function(socket) {    
+    //
+    // Set all the IRC client events.
+    //
+    for (var eventName in this.listenersForServer) {
+      this.socket.on(eventName, this.listenersForServer[eventName].bind(this));
+    }
   },
   
-  /****** Bridge */
-  bridgeReceive: function(packet) {
-    console.log(packet);
+  /**************************************************************************************************** Listeners for IRC */
+  // This dictionary contains all the listeners for the pipe emitted events
+  listenersForServer: {
+    
+    'message': function(packet) {
+      console.log("-> " + packet.text);
+      this.roomEcho(packet.room, packet.userid, packet.text);
+    },
+    
+    'users-join': function(roomAndUsers) {
+      //console.log(channelAndUsers);
+      $("." + roomAndUsers.room + ".wb-chat-users").text(roomAndUsers.length);
+    }
+    
   },
   
-  bridgeSend: function(text) {
-    wb.socket.emit("bridge", { room: "", userid: "", text: text });
-  },
-  
-  /****** Message */
-  messageReceive: function(packet) {
-    wb.receive(packet.room, packet.userid, packet.text, packet);
-  },
-
-  messageSend: function(room, text) {
-    wb.socket.emit("message", { room: room, userid: this.userid, text: text });
-  },
-
 
   /**************************************************************************************************** Actions */
   send: function(room, text) {
     if (text) {
       console.log("<- " + text);
-      this.messageSend(room, text);
+      this.socket.emit("message", { room: room, userid: this.userid, text: text });
       this.roomEcho(room, "you", text);
     }
-  },
-
-  receive: function(room, userid, text, packet) {
-    console.log("-> " + text);
-    this.roomEcho(room, userid, text);
   },
 
 
@@ -196,7 +193,7 @@ Room.prototype = {
   
   template: {
     roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
-    log: '<div class="wb-chat <%= room %>"> <h2><%= room %></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="wb-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
+    log: '<div class="wb-chat <%= room %>"> <h2><%= room %><span class="wb-chat-users"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="wb-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
     logItem: '<li><span class="wb-message-nick"><%= userid %></span> <span class="wb-message-text"><%= text %></message></li>'
   },
   

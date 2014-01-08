@@ -28,7 +28,7 @@
 
 // ****** River
 // This connects to the channel subsystem
-var river = require('./river');
+var River = require('./river');
 
 
  
@@ -42,18 +42,23 @@ Pawn.prototype = {
     //
     
     // ****** Instance variables
-    this.r = null;
+    this.river = null;
     this.socket = null;
     this.userid = configPawn.userid || "^ThePawn";
     this.configPawn = configPawn || {};
     
     // River
+    this.setRiver(new River(config.pipe, this.userid, configPawn.password));
+    
     // this.r = river.RiverFactory.new('irc', username, password, riverConfig, function() {});
-    this.r = new river.River(config.pipe, this.userid, configPawn.password, function() {
+    //this.setRiver(new river.River(config.pipe, this.userid, this.configPawn.password));
+    
+    
+    /*this.r = new River(config.pipe, this.userid, configPawn.password, function() {
       // Ready
       this.r.joinChannel(this.configPawn.rooms, this.onJoinChannel.bind(this));
     }.bind(this));
-    this.r.onReceive = this.onReceive.bind(this);
+    this.r.onReceive = this.onReceive.bind(this);*/
     
     // Socket
     this.setSocket(socket);
@@ -68,7 +73,8 @@ Pawn.prototype = {
     // This should restore latest room status, not the initial one... but let's start somewhere
     //TODO: fix this to a proper restore
     for (var i in this.configPawn.rooms) {
-      this.onJoinChannel(this.configPawn.rooms[i]);
+      this.listenersForRiver['channel-join'].call(this, this.configPawn.rooms[i]);
+      //this.onJoinChannel(this.configPawn.rooms[i]);
     }
   },
   
@@ -76,50 +82,70 @@ Pawn.prototype = {
     //
     // Called on disconnect. Let's clean up our rooms.
     //
-    this.r.destroy();
-    delete r;
-  },
-  
-  /**************************************************************************************************** River */
-  onJoinChannel: function(channel) {
-    this.socket.emit("message", { userid: "Bridge", room: channel, text: "Joined #" + channel });
-  },
-  
-  onReceive: function(channel, nick, text, data) {
-    this.socket.emit("message", { userid: nick, room: channel, text: text });
+    this.river.destroy();
+    delete this.river;
   },
   
   
-  /**************************************************************************************************** Listeners */
+  /**************************************************************************************************** Listeners: Client */
   // This dictionary contains all the listeners for the client emitted events
-  // (the slightly different syntax is on purpose)
-  listeners: {
+  listenersForClient: {
     
     'message': function(packet) {
       console.log(packet);
-      this.r.say(packet.room, packet.text);
+      this.river.say(packet.room, packet.text);
     },
     
     'meta': function() {
       // TODO: this will do an internal room broadcast
-    },
-    
-    'bridge-users': function() {
-      // TODO
     }
     
   },
   
   
-  /**************************************************************************************************** Socket */
+  /**************************************************************************************************** Listeners: River */
+  // This dictionary contains all the listeners for the pipe emitted events
+  listenersForRiver: {
+    
+    'ready': function() {
+      this.river.joinChannel(this.configPawn.rooms);
+    },
+    
+    'message': function(message) {
+      this.socket.emit('message', { userid: message.userid, room: message.room, text: message.text });
+    },
+    
+    'channel-join': function(channel) {
+      this.socket.emit('message', { userid: "Bridge", room: channel, text: "Joined #" + channel });
+    },
+    
+    'users-join': function(channelAndUsers) {
+      this.socket.emit('users-join', channelAndUsers);
+    }
+       
+  },
+  
+  
+  /**************************************************************************************************** Bind Events */
   setSocket: function(socket) {
     //
     // Set a new socket. Used when restoring pawns from limbo.
     //
     this.socket = socket;
     
-    for (var eventName in this.listeners) {
-      this.socket.on(eventName, this.listeners[eventName].bind(this));
+    for (var eventName in this.listenersForClient) {
+      this.socket.on(eventName, this.listenersForClient[eventName].bind(this));
+    }
+  },
+  
+  setRiver: function(river) {
+    //
+    // Set all the river events
+    //
+    this.river = river;
+    
+    for (var eventName in this.listenersForRiver) {
+      this.river.on(eventName, this.listenersForRiver[eventName].bind(this));
     }
   }
 }

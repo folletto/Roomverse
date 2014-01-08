@@ -24,47 +24,31 @@
  */
 
 var irc = require('irc');
+var Emitter = require('./emitter');
 
-var River = module.exports.River = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+var River = module.exports = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 River.prototype = {
 
   ircc: null,
   nick: "",
 
-  onReady: null,
-
-  init: function(config, nick, password, fx) {
+  init: function(config, nick, password) {
     //
     // Initialize the river class to manage the channels
     //
+    Emitter(River.prototype); // Mixin
+    
     console.log("~~~river~~~ Starting for %s...", nick);
-
+    
     this.nick = nick || "^WB-Pawn";
-    this.onReady = fx || this.onReady;
 
     // ****** Let's IRC
     config.userName = this.nick;
     config.realName = this.nick + " (WB Test Client)";
     if (password) config.password = password;
-    /*var configIRC = {
-      userName: this.nick,
-      realname: this.nick + " (WB Test Client)",
-      port: config.port,
-      channels: [],
-      
-      secure: config.secure,
-      sasl: config.sasl,
-      
-    };
-    if (password) configIRC.password = password;*/
-    this.ircc = new irc.Client(config.server, this.nick, config);
-
+    
     // ****** Binding season
-    this.ircc.addListener('error', this._listenErrors.bind(this)); // avoid the IRC client to terminate
-    this.ircc.addListener('registered', this._listenRegistered.bind(this)); // triggered when connected
-    this.ircc.addListener('message', this._listenMessage.bind(this)); // messages
-    this.ircc.addListener('names', this._listenNames.bind(this)); // names
-    //this.ircc.addListener('raw', this._listenRaw.bind(this)); // raw, use for debug
+    this.setIRC(new irc.Client(config.server, this.nick, config));
   },
   
   destroy: function() {
@@ -77,14 +61,71 @@ River.prototype = {
       delete self.ircc;
     });
   },
-
-
-  /**************************************************************************************************** API
-   * Try limiting the usage of the class to these methods.
-   */
   
-  /****** Calls */
-  joinChannel: function(channels, fx) {
+  /**************************************************************************************************** Listeners for IRC */
+  // This dictionary contains all the listeners for the pipe emitted events
+  listenersForIRC: {
+    
+    'error': function(message) {
+      //
+      // Handle errors if possible, or fire them to the console.
+      //
+      
+      if (message.command === 'err_passwdmismatch') {
+        // ****** Password error
+        console.log("Authentication Failed.");
+      } else {
+        // ****** Everything else
+        console.log("~~~river~~~ ERROR----------------------------------------!");
+        console.log(message);
+      }
+    },
+    
+    'registered': function(message) {
+      this.emit('ready', message);
+    },
+    
+    'message': function(nick, to, text, message) {
+      //
+      // Message receiver either from channel or user. 
+      //
+      if (to[0] == '#') {
+        // Channel
+        this.emit('message', { userid: nick, room: to.replace("#", ""), text: text });
+      } else {
+        // User
+        this.emit('message', { userid: nick, room: "@" + nick, text: text });
+      }
+    },
+    
+    'names': function(channel, nicks) {
+      var users = [];
+      for (var key in nicks) users.push(key);
+      
+      this.emit('users-join', { room: channel.replace("#", ""), users: users });
+    },
+    
+    'raw': function(message) {
+      // Mostly used for debug...
+      //console.log(message);
+    }
+       
+  },
+  
+  /**************************************************************************************************** Bind Events */
+  setIRC: function(ircc) {
+    //
+    // Set all the IRC client events.
+    //
+    this.ircc = ircc;
+    
+    for (var eventName in this.listenersForIRC) {
+      this.ircc.addListener(eventName, this.listenersForIRC[eventName].bind(this));
+    }
+  },
+
+  /**************************************************************************************************** API */
+  joinChannel: function(channels) {
     var self = this;
     
     if (channels) {
@@ -93,8 +134,7 @@ River.prototype = {
           console.log("~~~river~~~ Joining #" + channels[i]);
           this.ircc.join("#" + channels[i], function(nick, message) { 
             var channel = message.args[0].replace(/#/, "");
-            if (fx) fx(channel)
-            else self._listenChannelJoin(channel);
+            self.emit('channel-join', channel);
           });
         }
       }
@@ -116,54 +156,5 @@ River.prototype = {
     if (this.ircc) {
       this.ircc.send('NAMESX', channel);
     }
-  },
-
-  /****** Events */
-  onReady: function() {
-    console.log("~~~river~~~ Server ready. Nothing to do.");
-  },
-
-  onReceive: function(channel, nick, text, data) {
-    console.log("~~~river~~~ Received a message. Nothing to do.");
-  },
-
-
-  /**************************************************************************************************** Handle IRC */
-  _listenErrors: function(message) {
-    //
-    // Handle errors if possible, or fire them to the console.
-    //
-    
-    if (message.command === 'err_passwdmismatch') {
-      // ****** Password error
-      console.log("Authentication Failed.");
-    } else {
-      // ****** Everything else
-      console.log("~~~river~~~ ERROR----------------------------------------!");
-      console.log(message);
-    }
-  },
-
-  _listenRegistered: function(message) {
-    console.log("~~~river~~~ Ready.");
-    this.onReady();
-  },
-
-  _listenMessage: function(nick, to, text, message) {
-    this.onReceive(to.replace("#", ""), nick, text, message);
-  },
-
-  _listenChannelJoin: function(channel) {
-    console.log("~~~river~~~ Joined " + channel);
-  },
-  
-  _listenNames: function(channel, nicks) {
-    // Triggered when asking list of users
-    console.log('channel: ', nicks);
-  },
-  
-  _listenRaw: function(message) {
-    // Mostly used for debug...
-    console.log(message);
   }
 }
