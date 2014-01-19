@@ -40,7 +40,7 @@ River.prototype = {
     
     console.log("~~~river~~~ Starting for %s...", nick);
     
-    this.nick = nick || "^WB-Pawn";
+    this.nick = nick || "^RV-Pawn";
 
     // ****** Let's IRC
     config.userName = this.nick;

@@ -112,14 +112,14 @@ input {
 
 
 /****** List */
-#wb-room-list {
+#rv-room-list {
   color: #5e6776;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-#wb-room-list {
+#rv-room-list {
   /* Make it scrollable */
   position: absolute;
   top: 50px;
@@ -131,7 +131,7 @@ input {
   overflow-y: auto;
 }
 
-#wb-room-list li {
+#rv-room-list li {
   display: block;
   width: 100%;
   
@@ -140,16 +140,16 @@ input {
   overflow: hidden;
 }
 
-#wb-room-list li.active {
+#rv-room-list li.active {
   background: #181f32;
   color: #ffffff;
 }
-#wb-room-list li:hover {
+#rv-room-list li:hover {
   background: #181f32;
   color: #c0c0c0;
 }
 
-#wb-room-list li .notifications {
+#rv-room-list li .notifications {
   padding: 0 4px;
   background-color: #ffffff;
   border-radius: 20px;
@@ -157,11 +157,11 @@ input {
   font-size: 0.8em;
 }
 
-#wb-room-list li.active .notifications {
+#rv-room-list li.active .notifications {
   display: none;
 }
 
-#wb-room-list li .notifications:empty {
+#rv-room-list li .notifications:empty {
   display: none;
 }
 
@@ -187,7 +187,7 @@ input {
 
 
 /**************************************************************************************************** Col 2 */
-#wb-chats {
+#rv-chats {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -196,11 +196,11 @@ input {
   margin: 0;
 }
 
-#wb-chats.wait {
+#rv-chats.wait {
   background: #ffffff url(throbber.gif) no-repeat center center;
 }
 
-#wb-chats h2 {
+#rv-chats h2 {
   background: #181f32;
   color: #ffffff;
   height: 20px;
@@ -211,7 +211,7 @@ input {
   font-weight: 200;
 }
 
-#wb-chats .wb-chat .wb-chat-users {
+#rv-chats .rv-chat .rv-chat-users {
   display: block;
   top: 0;
   right: 0;
@@ -226,20 +226,20 @@ input {
   border-radius: 4px;
   
 }
-#wb-chats .wb-chat .wb-chat-users:empty {
+#rv-chats .rv-chat .rv-chat-users:empty {
   display: none;
 }
 
 /****** Status */
-#wb-chats .wb-chat {
+#rv-chats .rv-chat {
   display: none;
 }
-#wb-chats .wb-chat.active {
+#rv-chats .rv-chat.active {
   display: block;
 }
 
 /****** Log */
-#wb-chats .chat-log {
+#rv-chats .chat-log {
   position: absolute;
   top: 50px;
   bottom: 50px;
@@ -253,24 +253,24 @@ input {
   overflow-y: auto;
 }
 
-#wb-chats .chat-log li {
+#rv-chats .chat-log li {
   line-height: 1.4em;
   padding: 5px 0;
 }
 
-#wb-chats .chat-log .wb-message-nick {
+#rv-chats .chat-log .rv-message-nick {
   font-weight: bold;
   color: #666666;
   display: block;
 }
 
-#wb-chats .chat-log .wb-message-text {
+#rv-chats .chat-log .rv-message-text {
   
 }
 
 
 /******* Message Input */
-#wb-chats .chat-messagebox {
+#rv-chats .chat-messagebox {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -281,14 +281,14 @@ input {
   height: 50px;
 }
 
-#wb-chats .chat-messagebox .wb-messagebox {
+#rv-chats .chat-messagebox .rv-messagebox {
   margin: 14px 10px;
   width: 95%;
   
   outline: none;
 }
 
-#wb-chats .chat-messagebox .wb-messagebox:focus {
+#rv-chats .chat-messagebox .rv-messagebox:focus {
   border-color: #4c74ad
 }
 

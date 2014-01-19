@@ -26,9 +26,9 @@
  *
  */
  
- $(document).ready(function() { wb.init(config); });
+ $(document).ready(function() { roomverse.init(config); });
 
-var wb = {
+var roomverse = {
 
   socket: null,
   userid: "You",
@@ -56,14 +56,14 @@ var wb = {
     // Binds the various events to the DOM.
     //
     var self = this;
-    roomListId = roomListId || "wb-room-list";
-    chatsId = chatsId || "wb-chats";
-    widgetsId = widgetsId || "wb-widgets";
+    roomListId = roomListId || "rv-room-list";
+    chatsId = chatsId || "rv-chats";
+    widgetsId = widgetsId || "rv-widgets";
     
     this.rooms = new Rooms(roomListId, chatsId, widgetsId);
     
     // ****** Bind send event to all future chat textfields
-    this.rooms.dom.chats.on('keyup', 'input.wb-messagebox', function keyupEventSend() {
+    this.rooms.dom.chats.on('keyup', 'input.rv-messagebox', function keyupEventSend() {
       if(event.keyCode == 13){
         var box = $(this);
         var room = box.data("room");
@@ -98,7 +98,7 @@ var wb = {
     
     'users-join': function(roomAndUsers) {
       //console.log(roomAndUsers);
-      var $badge = $(".wb-chat." + roomAndUsers.room + " .wb-chat-users");
+      var $badge = $(".rv-chat." + roomAndUsers.room + " .rv-chat-users");
       
       var prevCount = parseInt($badge.text());
       if (!(prevCount > 0)) prevCount = 0;
@@ -108,7 +108,7 @@ var wb = {
     
     'users-part': function(roomAndUsers) {
       //console.log(roomAndUsers);
-      var $badge = $(".wb-chat." + roomAndUsers.room + " .wb-chat-users");
+      var $badge = $(".rv-chat." + roomAndUsers.room + " .rv-chat-users");
       
       var prevCount = parseInt($badge.text());
       if (!(prevCount > 0)) prevCount = 0;
@@ -212,8 +212,8 @@ Room.prototype = {
   
   template: {
     roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
-    log: '<div class="wb-chat <%= room %>"> <h2><%= room %><span class="wb-chat-users"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="wb-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
-    logItem: '<li><span class="wb-message-nick"><%= userid %></span> <span class="wb-message-text"><%= text %></message></li>'
+    log: '<div class="rv-chat <%= room %>"> <h2><%= room %><span class="rv-chat-users"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
+    logItem: '<li><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>'
   },
   
   init: function(rooms, data) {
@@ -241,7 +241,7 @@ Room.prototype = {
     this.dom.parent = this.rooms.dom.chats;
     this.dom.parent.append(_.template(this.template.log, data)); 
     
-    this.dom.self = this.dom.parent.children('.wb-chat.' + data.room); // and again let's store the jQuery object
+    this.dom.self = this.dom.parent.children('.rv-chat.' + data.room); // and again let's store the jQuery object
   },
   
   
@@ -285,7 +285,7 @@ Room.prototype = {
     
     // Reset
     this.dom.listItem.parent().children('li.active').removeClass('active');
-    this.dom.parent.children('.wb-chat.active').removeClass('active');
+    this.dom.parent.children('.rv-chat.active').removeClass('active');
     
     // Activate
     this.rooms.setActive(this.roomName);
@@ -301,7 +301,7 @@ Room.prototype = {
     this.dom.self.addClass("active");
     
     // Focus on messagebox too
-    this.dom.self.find('.wb-messagebox').focus();
+    this.dom.self.find('.rv-messagebox').focus();
   }
 }
 
