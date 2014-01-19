@@ -43,7 +43,7 @@ RANDOM FACTS
 LICENSE
 -------
 
-  _Copyright (C) 20132-2014, Davide Casali_  
+  _Copyright (C) 2013-2014, Davide Casali_  
   _Licensed under **GPLv3 License**_
 
 > _No sensible decision can be made any longer without taking into account   
