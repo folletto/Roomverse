@@ -1,5 +1,5 @@
-Codename WordBridge
-===================
+Roomverse
+=========
 
 **Modular chat for distributed team collaboration**
 
@@ -15,18 +15,35 @@ USAGE
 
 
 
+WHY ROOMVERSE
+-------------
+
+There are countless chat applications out there and countless collaboration apps,
+but after testing many of them I still think they all are missing one of the key
+elements of collaboration: the room context.
+Roomverse is designed to have a third permanent column that is contextual to
+the room you're in, where every room can load its own set of widgets.
+
+So each rooms isn't just a chat, but everyone has also visibility on the contextual
+widgets on the side. Everyone sees the same, but every room is different.
+
+Extensibility becomes a clear and key element of such approach.
+
+
+
 RANDOM FACTS
 ------------
 
-* Alpha status.
-* IRC backend.
+* Currently in development. Not feature complete, but works.
+* IRC backend to make it useful faster, in the future pluggable.
+* Simple to setup: download, install script, run.
 
 
 
 LICENSE
 -------
 
-  _Copyright (C) 2013, Davide Casali_  
+  _Copyright (C) 20132-2014, Davide Casali_  
   _Licensed under **GPLv3 License**_
 
 > _No sensible decision can be made any longer without taking into account   

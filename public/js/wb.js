@@ -1,6 +1,6 @@
 /*
  * Client Library
- * This file is part of WordBridge.
+ * This file is part of Roomverse.
  *
  * Copyright (C) 2013 Davide 'Folletto' Casali <folletto AT gmail DOT com>
  * 

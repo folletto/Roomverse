@@ -1,6 +1,6 @@
 /*
  * Parse Module
- * This file is part of WordBridge.
+ * This file is part of Roomverse.
  *
  ******************************************************************************************
  *

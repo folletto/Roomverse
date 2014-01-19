@@ -1,8 +1,8 @@
 {
-  "name": "WordBridge",
-  "description": "Realtime Poetry",
-  "version": "0.0.1",
-  "author": "Davide Casali <folletto@automattic.com>",
+  "name": "Roomverse",
+  "description": "Modular chat for distributed team collaboration",
+  "version": "0.1.0",
+  "author": "Davide Casali <folletto@gmail.com>",
   "private": true,
   "dependencies": {
     "express": "3.x",

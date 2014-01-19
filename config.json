@@ -8,6 +8,6 @@
   },
   
   "defaults": {
-    "rooms": "wordbridge wordbridge-test"
+    "rooms": "roomverse roomverse-test"
   }
 }
