@@ -51,19 +51,19 @@ var roomverse = {
     }.bind(this));
   },
 
-  bindAllDOM: function(roomListId, chatsId, widgetsId) {
+  bindAllDOM: function(roomListId, roomsId, widgetsId) {
     //
     // Binds the various events to the DOM.
     //
     var self = this;
     roomListId = roomListId || "rv-room-list";
-    chatsId = chatsId || "rv-chats";
+    roomsId = roomsId || "rv-chats";
     widgetsId = widgetsId || "rv-widgets";
     
-    this.rooms = new Rooms(roomListId, chatsId, widgetsId);
+    this.rooms = new Rooms(roomListId, roomsId, widgetsId);
     
     // ****** Bind send event to all future chat textfields
-    this.rooms.dom.chats.on('keyup', 'input.rv-messagebox', function keyupEventSend() {
+    this.rooms.dom.rooms.on('keyup', 'input.rv-messagebox', function keyupEventSend() {
       if(event.keyCode == 13){
         var box = $(this);
         var room = box.data("room");
@@ -97,23 +97,11 @@ var roomverse = {
     },
     
     'users-join': function(roomAndUsers) {
-      //console.log(roomAndUsers);
-      var $badge = $(".rv-chat." + roomAndUsers.room + " .rv-chat-users");
-      
-      var prevCount = parseInt($badge.text());
-      if (!(prevCount > 0)) prevCount = 0;
-      
-      $badge.text((prevCount + roomAndUsers.users.length) + " users");
+      this.rooms.rooms[roomAndUsers.room].users.join(roomAndUsers.users);
     },
     
     'users-part': function(roomAndUsers) {
-      //console.log(roomAndUsers);
-      var $badge = $(".rv-chat." + roomAndUsers.room + " .rv-chat-users");
-      
-      var prevCount = parseInt($badge.text());
-      if (!(prevCount > 0)) prevCount = 0;
-      
-      $badge.text((prevCount - roomAndUsers.users.length) + " users");
+      this.rooms.rooms[roomAndUsers.room].users.part(roomAndUsers.users);
     },
     
   },
@@ -136,11 +124,11 @@ var roomverse = {
     // ****** Write text to room
     text = this.sanitizeHTML(text); // this could be an action, but in this specific case I want to be sure
     text = action.emit('room-echo-' + room, text);
-    this.rooms.chats[room].appendItem(userid, text);
+    this.rooms.rooms[room].appendItem(userid, text);
     
     // ****** Write notification number if not active
     if (this.rooms.activeChat != room) {
-      this.rooms.chats[room].notify(1);
+      this.rooms.rooms[room].notify(1);
     }
   },
   
@@ -155,7 +143,7 @@ var roomverse = {
 var Rooms = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 Rooms.prototype = {
   
-  init: function(roomListId, chatsId) {
+  init: function(roomListId, roomsId) {
     //
     // Prepare the rooms manager.
     //
@@ -163,10 +151,10 @@ Rooms.prototype = {
     // ****** Init instance variables
     this.dom = {
       list: $('#' + roomListId),
-      chats: $('#' + chatsId),
+      rooms: $('#' + roomsId),
     };
     
-    this.chats = {}; // holds the Room object
+    this.rooms = {}; // holds the Room object
     
     this.activeChat = null;
   },
@@ -175,9 +163,9 @@ Rooms.prototype = {
     var self = this;
     room = room.toLowerCase();
     
-    if (!this.chats.hasOwnProperty(room)) {
+    if (!this.rooms.hasOwnProperty(room)) {
       // ****** Create the room UI
-      this.chats[room] = new Room(this, { room: room });
+      this.rooms[room] = new Room(this, { room: room });
       
       // ****** Then load the modules (so they can do stuff with the UI)
       modules.loadForRoom(room, function(room) {
@@ -186,7 +174,7 @@ Rooms.prototype = {
         
         // If no chat was active, let's activate the first
         if (!self.activeChat) {
-          self.dom.chats.removeClass("wait");
+          self.dom.rooms.removeClass("wait");
           self.setActive(room);
         }
       });
@@ -194,14 +182,14 @@ Rooms.prototype = {
   },
   
   remove: function(room) {
-    if (this.chats.hasOwnProperty(room)) {
-      delete this.chats[room];
+    if (this.rooms.hasOwnProperty(room)) {
+      delete this.rooms[room];
       action.emit('rooms-remove', room); 
     }
   },
   
   setActive: function(room) {
-    this.chats[room].focus();
+    this.rooms[room].focus();
     this.activeChat = room;
   }
 }
@@ -212,7 +200,7 @@ Room.prototype = {
   
   template: {
     roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
-    log: '<div class="rv-chat <%= room %>"> <h2><%= room %><span class="rv-chat-users"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
+    log: '<div class="rv-chat <%= room %>"> <h2><%= room %><span class="rv-chat-tray"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
     logItem: '<li><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>'
   },
   
@@ -230,6 +218,7 @@ Room.prototype = {
     this.roomName = data.room;
     this.rooms = rooms;
     this.notifications = 0;
+    this.users = null;
     
     // ****** Initialize room list
     this.rooms.dom.list.append(_.template(this.template.roomList, data));
@@ -238,8 +227,11 @@ Room.prototype = {
     this.dom.listItem.on('click', this.clickListItem.bind(this));
     
     // ****** Initialize chat log
-    this.dom.parent = this.rooms.dom.chats;
+    this.dom.parent = this.rooms.dom.rooms;
     this.dom.parent.append(_.template(this.template.log, data)); 
+    
+    // ****** Hook users
+    this.users = new RoomUsers(this, data);
     
     this.dom.self = this.dom.parent.children('.rv-chat.' + data.room); // and again let's store the jQuery object
   },
@@ -302,6 +294,127 @@ Room.prototype = {
     
     // Focus on messagebox too
     this.dom.self.find('.rv-messagebox').focus();
+  }
+}
+
+/**************************************************************************************************** UI: Room Users */
+var RoomUsers = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+RoomUsers.prototype = {
+  
+  template: {
+    badge: '',
+    notify: '<div class="rv-users-notify"><%= message %></div>',
+    list: ''
+  },
+  
+  init: function(room, data) {
+    //
+    // Create DOM elements.
+    //
+    this.roomName = data.room;
+    this.users = [];
+    this.dom = {
+      tray: $('.rv-chat.' + this.roomName + ' .rv-chat-tray'),
+    };
+  }, 
+  
+  list: function() {},
+  
+  join: function(users) {
+    //
+    // One or more users joined the room.
+    //
+    var dictUsers = this.toDictionary(users);
+    
+    // Merge the new users in, new one overwrites old.
+    this.users = this.usersMerge(this.users, dictUsers);
+    this.dom.tray.text(this.dictLength(this.users) + ' users');
+    
+    // Show a notification
+    this.showNotify(users.join(', ') + ' joined');
+  },
+  
+  part: function(users) {
+    //
+    // One or more users left the room.
+    //
+    var dictUsers = this.toDictionary(users);
+    
+    // Removes the departing users out.
+    this.users = this.usersRemove(this.users, dictUsers);
+    this.dom.tray.text(this.dictLength(this.users) + ' users');
+    
+    // Show a notification
+    this.showNotify(users.join(', ') + ' parted');
+  },
+  
+  showNotify: function(message) {
+    //
+    // Briefly shows a user-related message
+    //
+    
+    // ****** Append
+    this.dom.tray.parents('.rv-chat').append(_.template(this.template.notify, { 'message': message }));
+    
+    var NOTIFICATION_TIMEOUT = 2 * 1000;
+    setTimeout(function() {
+      var $notification = this.dom.tray.parents('.rv-chat').find('.rv-users-notify');
+      $notification.fadeOut(300, function() {
+        $notification.remove();
+      });
+    }.bind(this), NOTIFICATION_TIMEOUT)
+  },
+  
+  showList: function() {},
+  
+  /********** Data manipulation */
+  usersMerge: function(dict1, dict2, fx) {
+    //
+    // Merge two dictionaries{}.
+    //
+    var obj = dict1;
+    
+    for (var key in dict2) {
+      if (dict2.hasOwnProperty(key)) {
+        obj[key] = dict2[key];
+        if (fx) fx(key, obj[key]); // callback
+      }
+    }
+    
+    return obj;
+  },
+  usersRemove: function(dictOriginal, dictRemove, fx) {
+    //
+    // Subtract two dictionaries{}.
+    //
+    var obj = dictOriginal;
+    
+    for (var key in dictRemove) {
+      if (obj.hasOwnProperty(key) && dictRemove.hasOwnProperty(key)) {
+        if (fx) fx(key, obj[key]); // callback
+        delete obj[key];
+      }
+    }
+    
+    return obj;
+  },
+  toDictionary: function(a) {
+    //
+    // Converts an array[] to a dictionary{}
+    //
+    return a.reduce(function(obj, k) { obj[k] = {}; return obj; }, {});
+  },
+  dictLength: function(dict) {
+    //
+    // Length of the dictionary
+    //
+    var out = 0;
+    for (var k in dict) {
+      if (dict.hasOwnProperty(k)) {
+         out++;
+      }
+    }
+    return out;
   }
 }
 

@@ -211,7 +211,7 @@ input {
   font-weight: 200;
 }
 
-#rv-chats .rv-chat .rv-chat-users {
+#rv-chats .rv-chat .rv-chat-tray {
   display: block;
   top: 0;
   right: 0;
@@ -226,8 +226,21 @@ input {
   border-radius: 4px;
   
 }
-#rv-chats .rv-chat .rv-chat-users:empty {
+#rv-chats .rv-chat .rv-chat-tray:empty {
   display: none;
+}
+
+#rv-chats .rv-users-notify {
+  position: absolute;
+  right: 20px;
+  top: 35px;
+  
+  background: rgba(57, 63, 79, 0.9);
+  color: #cccccc;
+  border-radius: 3px;
+  padding: 5px 6px;
+  
+  transition: opacity 500ms;
 }
 
 /****** Status */
