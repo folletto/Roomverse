@@ -281,17 +281,6 @@ input {
   
 }
 
-/****** Log: collapse multiple lines names */
-/* Partial fix. Don't work for others */
-#rv-chats .chat-log .you+.you {
-  padding-top: 0;
-  list-style: none;
-}
-
-#rv-chats .chat-log .you+.you .rv-message-nick {
-  display: none;
-}
-
 
 /******* Message Input */
 #rv-chats .chat-messagebox {
