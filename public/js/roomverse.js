@@ -51,16 +51,16 @@ var roomverse = {
     }.bind(this));
   },
 
-  bindAllDOM: function(roomListId, roomsId, widgetsId) {
+  bindAllDOM: function(roomListId, roomsId, sidebarId) {
     //
     // Binds the various events to the DOM.
     //
     var self = this;
     roomListId = roomListId || "rv-room-list";
     roomsId = roomsId || "rv-chats";
-    widgetsId = widgetsId || "rv-widgets";
+    sidebarId = sidebarId || "rv-sidebar";
     
-    this.rooms = new Rooms(roomListId, roomsId, widgetsId);
+    this.rooms = new Rooms(roomListId, roomsId, sidebarId);
     
     // ****** Bind send event to all future chat textfields
     this.rooms.dom.rooms.on('keyup', 'input.rv-messagebox', function keyupEventSend() {
@@ -143,7 +143,7 @@ var roomverse = {
 var Rooms = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 Rooms.prototype = {
   
-  init: function(roomListId, roomsId) {
+  init: function(roomListId, roomsId, sidebarId) {
     //
     // Prepare the rooms manager.
     //
@@ -152,6 +152,7 @@ Rooms.prototype = {
     this.dom = {
       list: $('#' + roomListId),
       rooms: $('#' + roomsId),
+      sidebar: $('#' + sidebarId),
     };
     
     this.rooms = {}; // holds the Room object
@@ -201,7 +202,8 @@ Room.prototype = {
   template: {
     roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
     log: '<div class="rv-chat <%= room %>"> <h2><%= room %><span class="rv-chat-tray"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
-    logItem: '<li><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>'
+    logItem: '<li><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>',
+    widgets: '<div class="rv-widgets <%= room %>"><%= room %></div>'
   },
   
   init: function(rooms, data) {
@@ -213,7 +215,8 @@ Room.prototype = {
     this.dom = {
       self: null,
       parent: null,
-      listItem: null
+      listItem: null,
+      widgets: null,
     };
     this.roomName = data.room;
     this.rooms = rooms;
@@ -226,14 +229,19 @@ Room.prototype = {
     
     this.dom.listItem.on('click', this.clickListItem.bind(this));
     
-    // ****** Initialize chat log
+    // ****** Initialize room log
     this.dom.parent = this.rooms.dom.rooms;
     this.dom.parent.append(_.template(this.template.log, data)); 
+    
+    // ****** Initialize room widgets
+    this.rooms.dom.sidebar.append(_.template(this.template.widgets, data));
     
     // ****** Hook users
     this.users = new RoomUsers(this, data);
     
-    this.dom.self = this.dom.parent.children('.rv-chat.' + data.room); // and again let's store the jQuery object
+    // ****** And again let's store the jQuery object
+    this.dom.self = this.dom.parent.children('.rv-chat.' + data.room); 
+    this.dom.widgets = this.rooms.dom.sidebar.children('.rv-widgets.' + data.room);
   },
   
   
@@ -278,6 +286,7 @@ Room.prototype = {
     // Reset
     this.dom.listItem.parent().children('li.active').removeClass('active');
     this.dom.parent.children('.rv-chat.active').removeClass('active');
+    this.dom.widgets.parent().children('.rv-widgets.active').removeClass('active');
     
     // Activate
     this.rooms.setActive(this.roomName);
@@ -291,6 +300,7 @@ Room.prototype = {
     // Bring the UI elements up
     this.dom.listItem.addClass("active");
     this.dom.self.addClass("active");
+    this.dom.widgets.addClass("active");
     
     // Focus on messagebox too
     this.dom.self.find('.rv-messagebox').focus();

@@ -244,12 +244,8 @@ input {
 }
 
 /****** Status */
-#rv-chats .rv-chat {
-  display: none;
-}
-#rv-chats .rv-chat.active {
-  display: block;
-}
+#rv-chats .rv-chat { display: none; }
+#rv-chats .rv-chat.active { display: block; }
 
 /****** Log */
 #rv-chats .chat-log {
@@ -311,15 +307,18 @@ input {
 }
 
 
-/****** Widgets */
-.col3 .widget {
+/**************************************************************************************************** Widgets */
+#rv-sidebar .rv-widgets { display: none; }
+#rv-sidebar .rv-widgets.active { display: block; }
+
+.rv-widgets .widget {
   margin: 12px;
   
   border: 1px solid #e4e4e4;
   background: #ffffff;
 }
 
-.col3 .widget h1 {
+.rv-widgets .widget h1 {
   border-bottom: 1px solid #e4e4e4;
   padding: 6px 12px;
   margin: 0;
@@ -329,7 +328,7 @@ input {
   font-weight: 600;
 }
 
-.col3 .widget p {
+.rv-widgets .widget p {
   padding: 0 12px;
 }
 
