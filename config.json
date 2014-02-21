@@ -8,6 +8,6 @@
   },
   
   "defaults": {
-    "rooms": "roomverse roomverse-test wordpress"
+    "rooms": "roomverse roomverse-test wordpress wordpress-social wordpress-dev wordpress-ui wordpress-themes"
   }
 }
