@@ -41,6 +41,13 @@ var roomverse = {
     
     // ****** Backend is present, initialize
     if (this.socket) {
+      this.socket.on('connect', function messageConnected() {
+        $('#status-message').text('');
+      });
+      this.socket.on('disconnect', function messageDisconnected() {
+        $('#status-message').text('It seems the server stopped responding. Reload maybe?');
+      });
+      
       this.bindAllDOM();
       this.bindAllSocket();
     }
