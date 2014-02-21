@@ -273,6 +273,10 @@ input {
   display: block;
 }
 
+#rv-chats .chat-log .you .rv-message-nick {
+  color: #4c74ad;
+}
+
 #rv-chats .chat-log .rv-message-text {
   
 }
