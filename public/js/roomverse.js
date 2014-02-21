@@ -203,7 +203,7 @@ Room.prototype = {
     roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
     log: '<div class="rv-chat <%= room %>"> <h2><%= room %><span class="rv-chat-tray"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
     logItem: '<li><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>',
-    widgets: '<div class="rv-widgets <%= room %>"><%= room %></div>'
+    widgets: '<div class="rv-widgets <%= room %>"></div>'
   },
   
   init: function(rooms, data) {
@@ -501,7 +501,8 @@ var modules = {
   globalModules: [
     'ParseUrl',
     'UserMetaTimezone',
-    'Test'
+    'Test',
+    'Alpha'
   ],
   
   moduleBeingLoaded: {},
@@ -595,3 +596,41 @@ var modules = {
   }
 }
 
+/**************************************************************************************************** UI: Widget */
+var Widget = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
+Widget.prototype = {
+  
+  template: {
+    widget: '<aside class="widget <%= cssclass %>"><h1><%= title %></h1><%= content %></aside>'
+  },
+  
+  init: function(room, cssclass, title, startContent) {
+    //
+    // This class provides the API for the modules to use the widgets
+    // Yoinks this is awful code. But it's just to get the ball rolling.
+    //
+    
+    this.room = room;
+    this.cssclass = cssclass;
+    this.title = title;
+    this.content = startContent;
+    
+    this.update();
+  },
+  
+  update: function() {
+    //
+    // Updates the widget with the available data
+    //
+    
+    // Create template data
+    var data = {
+      cssclass: this.cssclass,
+      title: this.title,
+      content: this.content
+    }
+    
+    // Make and append
+    roomverse.rooms.rooms[this.room].dom.widgets.append(_.template(this.template.widget, data));
+  }
+}
