@@ -82,7 +82,7 @@ app.use(express.static(__dirname + "/public"));
 // ****** Routing
 app.get('/', function(req, res) {
   res.render('index', {
-    userid: req.session.userid || 'pawnpawnpawn',
+    userid: req.session.userid || '',
     requirePassword: !!config.pipe.sasl, // TODO: must be made protocol-independent on River rewrite
     rooms: req.query.rooms || req.session.rooms || config.defaults.rooms || 'roomverse-bots'
   });
