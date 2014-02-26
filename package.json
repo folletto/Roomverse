@@ -4,11 +4,18 @@
   "version": "0.1.0",
   "author": "Davide Casali <folletto@gmail.com>",
   "private": true,
+  
+  "repository": {
+    "type": "git", 
+    "url": "https://github.com/folletto/Roomverse.git"
+  },
+  
   "dependencies": {
     "express": "3.x",
     "irc": "0.3.x",
     "socket.io": "0.9.x",
-    "mysql": "2.0",
-    "jade": "0.31.x"
+    "jade": "0.31.x",
+    "levelup": "0.18.x",
+    "leveldown": "0.10.x"
   }
 }
