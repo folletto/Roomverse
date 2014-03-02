@@ -136,7 +136,39 @@ var roomverse = {
     // ****** Write notification number if not active
     if (this.rooms.activeChat != room) {
       this.rooms.rooms[room].notify(1);
+      this.globalNotificationUpdate();
     }
+  },
+  
+  /**************************************************************************************************** Notifications */
+  globalNotificationUpdate: function() {
+    // 
+    // Global notifications.
+    // It's a bit dirty.
+    //
+    var total = 0;
+    for (var room in this.rooms.rooms) {
+      total = total + this.rooms.rooms[room].notifications;
+    }
+    
+    if (total > 0) this.faviconUpdate('/assets/favicon-notify.png');
+    else this.faviconUpdate('/assets/favicon-default.png');
+  },
+  
+  faviconUpdate: function(src) {
+    //
+    // Support function to change the favicon on the fly.
+    //
+    document.head || (document.head = document.getElementsByTagName('head')[0]);
+    
+    var link = document.createElement('link');
+    var oldLink = document.getElementById('dynamic-favicon');
+    link.id = 'dynamic-favicon';
+    link.rel = 'shortcut icon';
+    link.href = src;
+    
+    if (oldLink) document.head.removeChild(oldLink);
+    document.head.appendChild(link);
   },
   
   /**************************************************************************************************** Other */
@@ -304,6 +336,7 @@ Room.prototype = {
   focus: function() {
     // Reset notifications
     this.notify(0);
+    roomverse.globalNotificationUpdate();
     
     // Bring the UI elements up
     this.dom.listItem.addClass("active");
