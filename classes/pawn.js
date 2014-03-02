@@ -82,7 +82,7 @@ Pawn.prototype = {
   listenersForClient: {
     
     'message': function(packet) {
-      console.log(packet);
+      //console.log(packet);
       this.river.say(packet.room, packet.text);
     },
     
