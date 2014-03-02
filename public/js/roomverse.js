@@ -99,8 +99,8 @@ var roomverse = {
       this.roomEcho(packet.room, packet.userid, packet.text);
     },
     
-    'room-join': function() {
-      //TODO
+    'room-join': function(room) {
+      this.rooms.addIfNotExists(room);
     },
     
     'users-join': function(roomAndUsers) {

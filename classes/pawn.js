@@ -106,7 +106,7 @@ Pawn.prototype = {
     },
     
     'room-join': function(channel) {
-      this.socket.emit('message', { userid: "Bridge", room: channel, text: "Joined #" + channel });
+      this.socket.emit('room-join', channel );
     },
     
     'users-join': function(roomAndUsers) {
