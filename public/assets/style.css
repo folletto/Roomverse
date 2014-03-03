@@ -200,12 +200,20 @@ input {
   background: #ffffff url(throbber.gif) no-repeat center center;
 }
 
-#rv-chats h2 {
+/****** Chat Bar */
+#rv-chats .rv-chat .rv-chat-bar {
   background: #181f32;
   color: #ffffff;
-  height: 20px;
+  height: 50px;
   margin: 0;
-  padding: 15px 20px;
+  padding: 0;
+  
+  overflow: hidden;
+}
+
+#rv-chats .rv-chat .rv-chat-bar h2 {
+  padding: 4px;
+  margin: 9px 10px;
   
   font-size: 1.2em;
   font-weight: 200;
@@ -213,17 +221,14 @@ input {
 
 #rv-chats .rv-chat .rv-chat-tray {
   display: block;
-  top: 0;
   right: 0;
+  top: 0;
   position: absolute;
-  padding: 4px;
-  margin: 12px;
+  padding: 16px;
   
   background-color: #393f4f;
   color: #cccccc;
-  font-size: 0.8em;
-  
-  border-radius: 4px;
+  font-size: 1em;
   
 }
 #rv-chats .rv-chat .rv-chat-tray:empty {

@@ -240,7 +240,7 @@ Room.prototype = {
   
   template: {
     roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
-    log: '<div class="rv-chat <%= room %>"> <h2><%= room %><span class="rv-chat-tray"></span></h2> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
+    log: '<div class="rv-chat <%= room %>"> <div class="rv-chat-bar"><h2><%= room %></h2><span class="rv-chat-tray"></span></div> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
     logItem: '<li class="<%= type %>"><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>',
     widgets: '<div class="rv-widgets <%= room %>"></div>'
   },
