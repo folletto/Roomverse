@@ -595,7 +595,7 @@ var modules = {
     // Load a module if it hasn't been loaded before.
     //
     force = force || false; // force load
-    var url = this.path + name + ".js";
+    var url = this.path + name + '/' + name + '.js';
     
     if (module.hasOwnProperty(name) && !force)  {
       // ****** Already loaded
