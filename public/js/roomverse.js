@@ -95,19 +95,23 @@ var roomverse = {
   listenersForServer: {
     
     'message': function(packet) {
-      console.log("-> " + packet.text);
+      packet.room = packet.room.toLowerCase();
+      console.log('-> [' + packet.room + '] ' + packet.text);
       this.roomEcho(packet.room, packet.userid, packet.text);
     },
     
     'room-join': function(room) {
+      room = room.toLowerCase();
       this.rooms.addIfNotExists(room);
     },
     
     'users-join': function(roomAndUsers) {
+      roomAndUsers.room = roomAndUsers.room.toLowerCase();
       this.rooms.rooms[roomAndUsers.room].users.join(roomAndUsers.users);
     },
     
     'users-part': function(roomAndUsers) {
+      roomAndUsers.room = roomAndUsers.room.toLowerCase();
       this.rooms.rooms[roomAndUsers.room].users.part(roomAndUsers.users);
     },
     
@@ -239,16 +243,19 @@ var Room = function() { this.init.apply(this, arguments); } // Prototype-like Co
 Room.prototype = {
   
   template: {
-    roomList: '<li class="<%= room %>"><%= room %><span class="notifications"></span></li>',
-    log: '<div class="rv-chat <%= room %>"> <div class="rv-chat-bar"><h2><%= room %></h2><span class="rv-chat-tray"></span></div> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
+    roomList: '<li class="<%= id %>"><%= room %><span class="notifications"></span></li>',
+    log: '<div class="rv-chat <%= id %>"> <div class="rv-chat-bar"><h2><%= room %></h2><span class="rv-chat-tray"></span></div> <ul class="chat-log"></ul> <div class="chat-messagebox"><input class="rv-messagebox" data-room="<%= room %>" type="text" /></div> </div>',
     logItem: '<li class="<%= type %>"><span class="rv-message-nick"><%= userid %></span> <span class="rv-message-text"><%= text %></message></li>',
-    widgets: '<div class="rv-widgets <%= room %>"></div>'
+    widgets: '<div class="rv-widgets <%= id %>"></div>'
   },
   
   init: function(rooms, data) {
     //
     // Create DOM elements.
     //
+    
+    // ****** Enrich data dictionary
+    data.id = this.classidify(data.room);
     
     // ****** Init instance variables
     this.dom = {
@@ -258,13 +265,14 @@ Room.prototype = {
       widgets: null,
     };
     this.roomName = data.room;
+    this.roomId = data.id;
     this.rooms = rooms;
     this.notifications = 0;
     this.users = null;
     
     // ****** Initialize room list
     this.rooms.dom.list.append(_.template(this.template.roomList, data));
-    this.dom.listItem = this.rooms.dom.list.children('li.' + data.room);
+    this.dom.listItem = this.rooms.dom.list.children('li.' + this.roomId);
     
     this.dom.listItem.on('click', this.clickListItem.bind(this));
     
@@ -279,8 +287,8 @@ Room.prototype = {
     this.users = new RoomUsers(this, data);
     
     // ****** And again let's store the jQuery object
-    this.dom.self = this.dom.parent.children('.rv-chat.' + data.room); 
-    this.dom.widgets = this.rooms.dom.sidebar.children('.rv-widgets.' + data.room);
+    this.dom.self = this.dom.parent.children('.rv-chat.' + this.roomId); 
+    this.dom.widgets = this.rooms.dom.sidebar.children('.rv-widgets.' + this.roomId);
   },
   
   
@@ -345,6 +353,19 @@ Room.prototype = {
     
     // Focus on messagebox too
     this.dom.self.find('.rv-messagebox').focus();
+  },
+  
+  classidify: function(name) {
+    //
+    // Get a name string and obtain a nice CSS-compatible class name
+    //
+    return name.replace(/[^a-z0-9]/g, function(s) {
+        var c = s.charCodeAt(0);
+        if (c == 32) return '-';
+        if (c == 46) return '-dot-';
+        if (c >= 65 && c <= 90) return '_' + s.toLowerCase();
+        return '__' + ('000' + c.toString(16)).slice(-4);
+    });
   }
 }
 
@@ -362,10 +383,13 @@ RoomUsers.prototype = {
     //
     // Create DOM elements.
     //
+    
+    // ****** Init instance variables
     this.roomName = data.room;
+    this.roomId = data.id;
     this.users = [];
     this.dom = {
-      tray: $('.rv-chat.' + this.roomName + ' .rv-chat-tray'),
+      tray: $('.rv-chat.' + this.roomId + ' .rv-chat-tray'),
       trayUsersCount: null,
     };
     
