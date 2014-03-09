@@ -86,7 +86,14 @@ River.prototype = {
 
   say: function(channel, text) {
     if (this.ircc) {
-      this.ircc.say("#" + channel, text);
+      if (channel[0] != '@') {
+        // Channel
+        this.ircc.say("#" + channel, text);
+      } else {
+        // User
+        var user = channel.replace(/^@/, '');
+        this.ircc.say(user, text);
+      }
     }
   },
   
