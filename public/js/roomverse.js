@@ -353,9 +353,9 @@ var RoomUsers = function() { this.init.apply(this, arguments); } // Prototype-li
 RoomUsers.prototype = {
   
   template: {
-    badge: '',
+    trayBadge: '<span class="rv-chat-tray-users"><span class="rv-chat-tray-users-count"></span> <div class="rv-chat-users-list"></div></span>',
     notify: '<div class="rv-users-notify"><%= message %></div>',
-    list: ''
+    userItem: '<div class="rv-users-list-user"><%= user %></div>',
   },
   
   init: function(room, data) {
@@ -366,7 +366,12 @@ RoomUsers.prototype = {
     this.users = [];
     this.dom = {
       tray: $('.rv-chat.' + this.roomName + ' .rv-chat-tray'),
+      trayUsersCount: null,
     };
+    
+    // Add tray item
+    this.dom.tray.html(_.template(this.template.trayBadge, {}));
+    this.dom.trayUsersCount = this.dom.tray.find('.rv-chat-tray-users-count');
   }, 
   
   list: function() {},
@@ -379,7 +384,9 @@ RoomUsers.prototype = {
     
     // Merge the new users in, new one overwrites old.
     this.users = this.usersMerge(this.users, dictUsers);
-    this.dom.tray.text(this.dictLength(this.users) + ' users');
+    
+    // Update UI
+    this.trayUpdate(this.users);
     
     // Show a notification
     this.showNotify(users.join(', ') + ' joined');
@@ -393,10 +400,26 @@ RoomUsers.prototype = {
     
     // Removes the departing users out.
     this.users = this.usersRemove(this.users, dictUsers);
-    this.dom.tray.text(this.dictLength(this.users) + ' users');
+    
+    // Update UI
+    this.trayUpdate(this.users);
     
     // Show a notification
     this.showNotify(users.join(', ') + ' parted');
+  },
+  
+  trayUpdate: function(users) {
+    //
+    // Updates the tray UI
+    //
+    this.dom.trayUsersCount.text(this.dictLength(users) + ' users');
+    
+    var htmlList = "";
+    for (var user in users) {
+      htmlList += _.template(this.template.userItem, { user: user });
+    }
+    
+    this.dom.trayUsersCount.parent().find('.rv-chat-users-list').html(htmlList);
   },
   
   showNotify: function(message) {

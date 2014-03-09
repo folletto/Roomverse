@@ -224,7 +224,6 @@ input {
   right: 0;
   top: 0;
   position: absolute;
-  padding: 16px;
   
   background-color: #393f4f;
   color: #cccccc;
@@ -234,11 +233,16 @@ input {
 #rv-chats .rv-chat .rv-chat-tray:empty {
   display: none;
 }
+#rv-chats .rv-chat .rv-chat-tray>* {
+  display: block;
+  padding: 16px;
+}
 
 #rv-chats .rv-users-notify {
   position: absolute;
   right: 20px;
   top: 35px;
+  z-index: 6;
   
   background: rgba(57, 63, 79, 0.9);
   color: #cccccc;
@@ -246,6 +250,29 @@ input {
   padding: 5px 6px;
   
   transition: opacity 500ms;
+}
+
+/****** Users */
+#rv-chats .rv-chat .rv-chat-users-list {
+  display: none;
+  
+  position: fixed;
+  right: 300px; /* sidebar size */
+  top: 50px; /* toolbar size */
+  bottom: 50px; /* input bar size */
+  z-index: 5;
+  width: 200px;
+  
+  background: #393f4f;
+  padding: 10px;
+  white-space: nowrap;
+  
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#rv-chats .rv-chat .rv-chat-tray-users:hover .rv-chat-users-list {
+  display: block;
 }
 
 /****** Status */
