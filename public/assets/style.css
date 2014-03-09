@@ -352,6 +352,23 @@ input {
   border-color: #4c74ad
 }
 
+/****** Scrollbars */
+#rv-chats .chat-log::-webkit-scrollbar {  
+    width: 12px;  
+}  
+#rv-chats .chat-log::-webkit-scrollbar-track {  
+  background-color: rgba(24, 31, 50, 0.01);
+}  
+#rv-chats .chat-log::-webkit-scrollbar-thumb {  
+  background-color: rgba(24, 31, 50, 0.1);
+  transition: background-color 500ms;
+}  
+#rv-chats .chat-log::-webkit-scrollbar-thumb:hover {  
+  background-color: rgba(24, 31, 50, 0.3);
+}
+
+
+
 /**************************************************************************************************** Col 3 */
 .col3 {
   background: #f8f8f5;
