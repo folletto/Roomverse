@@ -95,23 +95,23 @@ var roomverse = {
   listenersForServer: {
     
     'message': function(packet) {
-      packet.room = packet.room.toLowerCase();
+      packet.room = roomverse.normalizeName(packet.room);
       console.log('-> [' + packet.room + '] ' + packet.text);
       this.roomEcho(packet.room, packet.userid, packet.text);
     },
     
     'room-join': function(room) {
-      room = room.toLowerCase();
+      room = roomverse.normalizeName(room);
       this.rooms.addIfNotExists(room);
     },
     
     'users-join': function(roomAndUsers) {
-      roomAndUsers.room = roomAndUsers.room.toLowerCase();
+      roomAndUsers.room = roomverse.normalizeName(roomAndUsers.room);
       this.rooms.rooms[roomAndUsers.room].users.join(roomAndUsers.users);
     },
     
     'users-part': function(roomAndUsers) {
-      roomAndUsers.room = roomAndUsers.room.toLowerCase();
+      roomAndUsers.room = roomverse.normalizeName(roomAndUsers.room);
       this.rooms.rooms[roomAndUsers.room].users.part(roomAndUsers.users);
     },
     
@@ -178,6 +178,20 @@ var roomverse = {
   /**************************************************************************************************** Other */
   sanitizeHTML: function(string) {
     return string.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  },
+  
+  normalizeName: function(string) {
+    //
+    // Normalize the name in order to avoid chats not found for difference in capitalization
+    //
+    return string.toLowerCase();
+  },
+  
+  isRoom: function(name) {
+    //
+    // True if the passed argument is a room, false if it's a user
+    //
+    return (name[0] != "@") ? true : false;
   }
 };
 
@@ -205,7 +219,7 @@ Rooms.prototype = {
   
   addIfNotExists: function(room) {
     var self = this;
-    room = room.toLowerCase();
+    room = roomverse.normalizeName(room);
     
     if (!this.rooms.hasOwnProperty(room)) {
       // ****** Create the room UI
@@ -233,6 +247,14 @@ Rooms.prototype = {
   },
   
   setActive: function(room) {
+    //
+    // Set the active room
+    //
+    
+    // Remove focus
+    this.rooms[room].blur();
+    
+    // Focus
     this.rooms[room].focus();
     this.activeChat = room;
   }
@@ -332,16 +354,20 @@ Room.prototype = {
   clickListItem: function() {
     
     // Reset
-    this.dom.listItem.parent().children('li.active').removeClass('active');
-    this.dom.parent.children('.rv-chat.active').removeClass('active');
-    this.dom.widgets.parent().children('.rv-widgets.active').removeClass('active');
+    //this.dom.listItem.parent().children('li.active').removeClass('active');
+    //this.dom.parent.children('.rv-chat.active').removeClass('active');
+    //this.dom.widgets.parent().children('.rv-widgets.active').removeClass('active');
     
     // Activate
     this.rooms.setActive(this.roomName);
   },
   
-  /**************************************************************************************************** Other */
+  /**************************************************************************************************** Focus */
   focus: function() {
+    //
+    // Bring room to foreground
+    //
+    
     // Reset notifications
     this.notify(0);
     roomverse.globalNotificationUpdate();
@@ -355,6 +381,18 @@ Room.prototype = {
     this.dom.self.find('.rv-messagebox').focus();
   },
   
+  blur: function() {
+    //
+    // Remove room focus
+    //
+    
+    // This actually removes focus from every room, should probably do it just for this one?
+    this.dom.listItem.parent().children('li.active').removeClass('active');
+    this.dom.parent.children('.rv-chat.active').removeClass('active');
+    this.dom.widgets.parent().children('.rv-widgets.active').removeClass('active');
+  },
+  
+  /**************************************************************************************************** Other */
   classidify: function(name) {
     //
     // Get a name string and obtain a nice CSS-compatible class name
@@ -376,7 +414,7 @@ RoomUsers.prototype = {
   template: {
     trayBadge: '<span class="rv-chat-tray-users"><span class="rv-chat-tray-users-count"></span> <div class="rv-chat-users-list"></div></span>',
     notify: '<div class="rv-users-notify"><%= message %></div>',
-    userItem: '<div class="rv-users-list-user"><%= user %></div>',
+    userItem: '<div class="rv-users-list-user" data-user="<%= user %>"><%= user %></div>',
   },
   
   init: function(room, data) {
@@ -394,11 +432,14 @@ RoomUsers.prototype = {
     };
     
     // Add tray item
-    this.dom.tray.html(_.template(this.template.trayBadge, {}));
-    this.dom.trayUsersCount = this.dom.tray.find('.rv-chat-tray-users-count');
+    if (roomverse.isRoom(this.roomName)) {
+      this.dom.tray.html(_.template(this.template.trayBadge, {}));
+      this.dom.trayUsersCount = this.dom.tray.find('.rv-chat-tray-users-count');
+      
+      // Bind
+      this.bindAllDOM();
+    }
   }, 
-  
-  list: function() {},
   
   join: function(users) {
     //
@@ -463,7 +504,23 @@ RoomUsers.prototype = {
     }.bind(this), NOTIFICATION_TIMEOUT)
   },
   
-  showList: function() {},
+  bindAllDOM: function() {
+    //
+    // Bind events
+    //
+    
+    // ****** Bind send event to all future user names
+    this.dom.tray.on('click', '.rv-users-list-user', function userClickToChat() {
+      // Open a new room with the user
+      var roomForUser = roomverse.normalizeName($(this).data('user'));
+      
+      if (roomForUser != roomverse.normalizeName(roomverse.userid)) {
+        roomForUser = '@' + roomForUser;
+        roomverse.rooms.addIfNotExists(roomForUser);
+        roomverse.rooms.setActive(roomForUser);
+      }
+    });
+  },
   
   /********** Data manipulation */
   usersMerge: function(dict1, dict2, fx) {

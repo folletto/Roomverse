@@ -290,6 +290,10 @@ input {
   display: block;
 }
 
+#rv-chats .rv-chat .rv-chat-users-list .rv-users-list-user:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
 /****** Status */
 #rv-chats .rv-chat { display: none; }
 #rv-chats .rv-chat.active { display: block; }
