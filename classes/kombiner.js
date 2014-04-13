@@ -72,6 +72,7 @@ var Kombiner = { // Use as a static library.
     
     // Do an initial combine
     this.endpoints[endpoint].cache = this.combine(this.endpoints[endpoint].files);
+    this.endpoints[endpoint].timestamp = Date.now();
     
     // Watch for changes
     this.watchAll(this.endpoints[endpoint].files, this.onWatchChange.bind(this));
@@ -144,7 +145,7 @@ var Kombiner = { // Use as a static library.
     }
     
     // Headers
-    var ext = endpoint.split().pop();
+    var ext = endpoint.split(".").pop();
     if (ext == 'js') {
       res.setHeader('Content-Type', 'application/javascript');
     } else if (ext == 'css') {
@@ -192,8 +193,6 @@ var Kombiner = { // Use as a static library.
           
           // Combine
           this.endpoints[endpoint].cache = this.combine(this.endpoints[endpoint].files);
-          
-          // Timestamp
           this.endpoints[endpoint].timestamp = Date.now();
         }
       }
