@@ -16,6 +16,7 @@
     "socket.io": "0.9.x",
     "jade": "0.31.x",
     "levelup": "0.18.x",
-    "leveldown": "0.10.x"
+    "leveldown": "0.10.x",
+    "kombiner": "1.0.x"
   }
 }
