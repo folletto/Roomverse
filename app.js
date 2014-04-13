@@ -34,6 +34,7 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+var kombiner = require('./classes/kombiner').listen(server);
 var irc = require('irc');
 var pawns = require('./classes/pawns');
 var config = require('./config.json');
@@ -68,6 +69,17 @@ app.use(express.session({
 app.engine('jade', require('jade').__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+
+// Kombiner
+kombiner.serve('js/roomverse.js', [
+  './public/js/roomverse-core.js',
+  './public/js/roomverse-rooms.js',
+  './public/js/roomverse-room.js',
+  './public/js/roomverse-roomusers.js',
+  './public/js/actions.js',
+  './public/js/roomverse-modules.js',
+  './public/js/roomverse-widget.js'
+]);
 
 
 
