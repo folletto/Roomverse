@@ -107,7 +107,11 @@ var roomverse = {
     
     'users-join': function(roomAndUsers) {
       roomAndUsers.room = roomverse.normalizeName(roomAndUsers.room);
-      this.rooms.rooms[roomAndUsers.room].users.join(roomAndUsers.users);
+      
+      if (this.rooms.rooms[roomAndUsers.room]) {
+        // Avoid errors on room creation
+        this.rooms.rooms[roomAndUsers.room].users.join(roomAndUsers.users);
+      }
     },
     
     'users-part': function(roomAndUsers) {
