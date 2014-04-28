@@ -36,11 +36,23 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var kombiner = require('kombiner').listen(server);
 var irc = require('irc');
+var fs = require('fs');
+
 var pawns = require('./classes/pawns');
 var config = require('./config.json');
 
 io.set('log level', 1);
 
+
+// ****** Config Fallbacks
+var config = null;
+if (fs.existsSync("./config.json")) {
+  // Load local one
+  config = require('./config.json');
+} else {
+  // Fallback
+  config = require('./config.default.json');
+}
 
 
 // ****************************************************************************************************
