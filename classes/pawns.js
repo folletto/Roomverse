@@ -41,7 +41,7 @@ Pawns.prototype = {
     this.limbo = {};
   },
   
-  new: function(id, configPawn, socket) {
+  new: function(id, configPawn, socket, db) {
     //
     // Creates a new pawn and associates it to the internal dictionary
     //
@@ -50,11 +50,11 @@ Pawns.prototype = {
       this.pawns[id] = this.limbo[id];
       delete this.limbo[id];
       
-      this.pawns[id].restore(this.config, configPawn, socket); // Restore (socket connection, ...)
+      this.pawns[id].restore(this.config, configPawn, socket, db); // Restore (socket connection, ...)
       
     } else if (!this.pawns.hasOwnProperty(id)) {
       // New pawn, create
-      this.pawns[id] = new pawn.Pawn(this.config, configPawn, socket);
+      this.pawns[id] = new pawn.Pawn(this.config, configPawn, socket, db);
       
     } else {
       // Whops. Pawn already there.

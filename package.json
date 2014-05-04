@@ -17,6 +17,7 @@
     "jade": "0.31.x",
     "levelup": "0.18.x",
     "leveldown": "0.10.x",
+    "memdown": "0.7.x",
     "kombiner": "1.0.x"
   }
 }

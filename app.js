@@ -36,9 +36,11 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var kombiner = require('kombiner').listen(server);
 var irc = require('irc');
+var levelup = require('levelup');
 var fs = require('fs');
 
 var pawns = require('./classes/pawns');
+var db = require('./classes/socketdb');
 var config = require('./config.json');
 
 io.set('log level', 1);
@@ -90,9 +92,24 @@ kombiner.serve('js/roomverse.js', [
   './public/js/roomverse-roomusers.js',
   './public/js/actions.js',
   './public/js/roomverse-modules.js',
-  './public/js/roomverse-widget.js'
+  './public/js/roomverse-widget.js',
+  './public/js/socketdb.js',
 ]);
 
+// DB
+var DB_PATH = './db';
+var database_type = 'memdown'; // default, in-memory, gets erased on termination
+if (fs.existsSync(DB_PATH)) {
+  // Use LevelDown
+  console.log("DB: Using LevelDown.");
+  database_type = 'leveldown';
+} else {
+  console.log("DB: Using MemDown. The data will be erased on termination.\n    Create an empty 'db' folder to switch to LevelDown.");
+}
+var ldb = levelup(DB_PATH, { db: require(database_type) });
+
+// Setup internal DB socket handler
+db.levelup(ldb);
 
 
 // ****************************************************************************************************
@@ -182,7 +199,7 @@ io.sockets.on('connection', function wb_iosocket(socket) {
     rooms: socket.handshake.session.rooms && socket.handshake.session.rooms.split(" "),
     password: socket.handshake.session.password
   };
-  pawns.new(configPawn.userid, configPawn, socket); // add a better ID by using SHA on the password?
+  pawns.new(configPawn.userid, configPawn, socket, db); // add a better ID by using SHA on the password?
   
   
   // ****** Disconnect

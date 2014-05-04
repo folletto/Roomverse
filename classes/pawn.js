@@ -36,7 +36,7 @@ var River = require('./river');
 var Pawn = module.exports.Pawn = function() { this.init.apply(this, arguments); } // Prototype-like Constructor
 Pawn.prototype = {
   
-  init: function(config, configPawn, socket) {
+  init: function(config, configPawn, socket, db) {
     //
     // Initialize the server-side pawn to manage the rooms
     //
@@ -46,12 +46,16 @@ Pawn.prototype = {
     this.socket = null;
     this.userid = configPawn.userid || "^ThePawn";
     this.configPawn = configPawn || {};
+    this.db = null;
     
     // River
     this.setRiver(new River(config.pipe, this.userid, configPawn.password));
     
     // Socket
     this.setSocket(socket);
+    
+    // DB
+    this.db = db.getSocketListener(socket);
   },
   
   restore: function(config, configPawn, socket) {

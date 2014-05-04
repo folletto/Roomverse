@@ -50,6 +50,7 @@ var roomverse = {
       
       this.bindAllDOM();
       this.bindAllSocket();
+      db.listen(this.socket);
     }
     
     // ****** Let's go with the first round of modules!
